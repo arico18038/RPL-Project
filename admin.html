@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Sikasir-4SR</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-body">
+
+    <div id="login-screen" class="login-container">
+        <h2>Login Admin</h2>
+        <input type="text" id="username" placeholder="Username (isi: admin)" value="admin">
+        <input type="password" id="password" placeholder="Password (isi: 123)" value="123">
+        <button class="btn" onclick="loginAdmin()">Masuk</button>
+        <p id="login-error" style="color: red; display: none;">Username/Password salah!</p>
+    </div>
+
+    <div id="admin-dashboard" style="display: none;">
+        <nav class="navbar admin-nav">
+            <h2>Dashboard Sikasir-4SR</h2>
+            <button class="btn btn-danger" onclick="logoutAdmin()">Logout</button>
+        </nav>
+
+        <div class="admin-content">
+            <div class="admin-panel">
+            <h3>Konfirmasi Pesanan & Pembayaran</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Meja</th>
+                        <th>Pesanan</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-pesanan-body">
+                    <tr>
+                        <td colspan="5" style="text-align:center;">Memuat data pesanan...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+            <div class="admin-panel mt-20">
+                <h3>Kelola Menu</h3>
+                <button class="btn btn-add">+ Tambah Menu Baru</button>
+                <table class="admin-table mt-10">
+                    <tr>
+                        <th>Nama Menu</th>
+                        <th>Harga</th>
+                        <th>Aksi</th>
+                    </tr>
+                    <tr>
+                        <td>Nasi Goreng Spesial</td>
+                        <td>Rp 25.000</td>
+                        <td><button class="btn-danger">Hapus</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
