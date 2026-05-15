@@ -4,50 +4,13 @@
 @section('body_class', 'pos-body')
 
 @section('content')
-<aside class="sidebar">
-    <div>
-        <div class="sidebar-brand">
-            <img src="{{ asset('assets/logo-4sr.png') }}" alt="Logo 4SR" class="brand-logo-img">
-            <div>
-                <h3>Sikasir-4SR</h3>
-                <p>Sistem kasir 4SR</p>
-            </div>
-        </div>
-
-        <ul class="sidebar-menu">
-            <li><a href="{{ route('pos.index') }}" class="active"><span>Kasir</span></a></li>
-            <li><a href="#tentang"><span>Tentang Kami</span></a></li>
-        </ul>
-    </div>
-
-    <a href="{{ route('admin.index') }}" class="logout-link">Login Admin</a>
-</aside>
+@include('partials.sidebar', ['active' => 'kasir'])
 
 <main class="main-content" id="kasir">
-    <header class="top-header">
-        <div>
-            <h1>Kasir</h1>
-            <p>Rumah Makan 4SR</p>
-        </div>
-
-        <div class="header-actions">
-            <div class="time-card">
-                <span>Waktu</span>
-                <strong id="jam-sekarang">--:--:--</strong>
-            </div>
-
-            <div class="user-card">
-                <div class="avatar">AU</div>
-                <div>
-                    <h4>Akbar Udin</h4>
-                    <p>Admin Kasir</p>
-                </div>
-            </div>
-        </div>
-    </header>
+    @include('partials.topbar', ['title' => 'Kasir', 'subtitle' => 'Rumah Makan 4SR', 'role' => 'Kasir'])
 
     @if (session('success'))
-        <div class="alert success">{{ session('success') }}</div>
+        <div class="toast-message is-visible">Produk berhasil ditambahkan</div>
     @endif
 
     @if ($errors->any())
@@ -57,9 +20,9 @@
     <form class="pos-layout" method="POST" action="{{ route('orders.store') }}" id="order-form">
         @csrf
 
-        <div class="product-area">
+        <section class="product-area">
             <div class="search-box">
-                <span>Cari</span>
+                <span class="search-icon">⌕</span>
                 <input type="text" id="search-menu" placeholder="Cari produk (F2)">
             </div>
 
@@ -72,29 +35,44 @@
 
             <div id="container-menu" class="product-grid">
                 @foreach ($menus as $menu)
+                    @php
+                        $stock = $menu->id === 5 ? 3 : max(12, 133 - ($loop->iteration * 13));
+                        $code = 'BRG-' . str_pad((string) $menu->id, 3, '0', STR_PAD_LEFT);
+                        $image = $menu->image_url && str_starts_with($menu->image_url, 'http') ? $menu->image_url : null;
+                    @endphp
                     <article class="product-card" data-name="{{ strtolower($menu->name) }}" data-category="{{ $menu->category_id }}">
                         <div class="product-image">
-                            <div class="product-placeholder">{{ strtoupper(substr($menu->name, 0, 2)) }}</div>
+                            @if ($image)
+                                <img src="{{ $image }}" alt="{{ $menu->name }}">
+                            @else
+                                <div class="product-placeholder">{{ strtoupper(substr($menu->name, 0, 2)) }}</div>
+                            @endif
                             <span class="product-badge">{{ $menu->category?->name ?? 'Menu' }}</span>
                         </div>
+
                         <div class="product-info">
                             <h3>{{ $menu->name }}</h3>
-                            <p class="product-code">{{ $menu->description ?? 'Menu 4SR' }}</p>
+                            <p class="product-code">{{ $code }}</p>
+
                             <div class="product-bottom">
                                 <div>
                                     <p class="product-price">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
-                                    <p class="product-stock">Tersedia</p>
+                                    <p @class(['product-stock', 'danger' => $stock < 20])>Stok: {{ $stock }}</p>
                                 </div>
+
                                 <button type="button" class="add-button" data-id="{{ $menu->id }}" data-name="{{ $menu->name }}" data-price="{{ $menu->price }}">+</button>
                             </div>
                         </div>
                     </article>
                 @endforeach
             </div>
-        </div>
+        </section>
 
         <aside class="payment-summary">
-            <h2>Ringkasan Pembayaran</h2>
+            <div class="summary-title">
+                <h2>Ringkasan Pembayaran</h2>
+                <span id="cart-count" class="cart-count">0 Item</span>
+            </div>
 
             <div class="summary-section">
                 <label class="table-label" for="table-id">Nomor meja</label>
@@ -109,7 +87,8 @@
             <div class="summary-section">
                 <h4>Item Dipilih</h4>
                 <div id="empty-cart-box" class="empty-cart-box">
-                    <span>Keranjang masih kosong</span>
+                    <span class="empty-icon">▱</span>
+                    <p>Keranjang masih kosong</p>
                 </div>
                 <ul id="daftar-pesanan" class="cart-list"></ul>
                 <div id="order-items-inputs"></div>
@@ -120,9 +99,23 @@
                 <strong id="subtotal-harga">Rp 0</strong>
             </div>
 
-            <input type="hidden" id="tipe-diskon" value="rupiah">
-            <input type="hidden" id="nilai-diskon" value="0">
-            <input type="hidden" name="note" value="">
+            <div class="discount-box">
+                <label>Diskon (F7)</label>
+                <div>
+                    <select id="tipe-diskon">
+                        <option value="persen">%</option>
+                        <option value="rupiah">Rp</option>
+                    </select>
+                    <input type="number" id="nilai-diskon" value="0" min="0">
+                </div>
+            </div>
+
+            <div class="summary-row">
+                <span>PPN 11%</span>
+                <strong id="ppn-harga">Rp 0</strong>
+            </div>
+
+            <input type="hidden" name="note" value="Pesanan dari Kasir Web">
 
             <div class="total-box">
                 <span>Total pembayaran</span>
@@ -130,18 +123,15 @@
             </div>
 
             <div class="payment-method">
-                <p>Metode Pembayaran</p>
-                <button type="button">Tunai</button>
+                <p>Metode Pembayaran Hanya Bisa:</p>
+                <button type="button">▣ Tunai</button>
             </div>
 
-            <button class="pay-button" id="btn-bayar" type="submit" disabled>Bayar (F9)</button>
-            <button class="clear-button" type="button" id="btn-clear-cart">Hapus keranjang</button>
+            <div class="summary-actions">
+                <button class="pay-button" id="btn-bayar" type="submit" disabled>Bayar (F9)</button>
+                <button class="clear-button" type="button" id="btn-clear-cart">▱ Hapus keranjang</button>
+            </div>
         </aside>
     </form>
-
-    <section id="tentang" class="about-pos">
-        <h2>Tentang Sikasir-4SR</h2>
-        <p>Sikasir-4SR adalah sistem kasir digital untuk restoran yang memudahkan proses pemesanan, pembayaran, dan pengelolaan menu secara modern.</p>
-    </section>
 </main>
 @endsection

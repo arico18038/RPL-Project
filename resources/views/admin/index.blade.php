@@ -1,46 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Admin Dashboard - Sikasir-4SR')
+@section('title', 'Pesanan - Sikasir-4SR')
 @section('body_class', 'admin-body')
 
 @section('content')
-<aside class="sidebar">
-    <div>
-        <div class="sidebar-brand">
-            <img src="{{ asset('assets/logo-4sr.png') }}" alt="Logo 4SR" class="brand-logo-img">
-            <div>
-                <h3>Sikasir-4SR</h3>
-                <p>Admin panel</p>
-            </div>
-        </div>
-
-        <ul class="sidebar-menu">
-            <li><a href="{{ route('admin.index') }}" class="active"><span>Pesanan</span></a></li>
-            <li><a href="{{ route('pos.index') }}"><span>Kasir</span></a></li>
-        </ul>
-    </div>
-
-    <a href="{{ route('pos.index') }}" class="logout-link">Keluar</a>
-</aside>
+@include('partials.sidebar', ['active' => 'pesanan'])
 
 <main class="main-content">
-    <header class="top-header">
-        <div>
-            <h1>Dashboard Admin</h1>
-            <p>Kelola pesanan dan pembayaran pelanggan</p>
-        </div>
-
-        <div class="user-card">
-            <div class="avatar">AU</div>
-            <div>
-                <h4>Akbar Udin</h4>
-                <p>Admin Kasir</p>
-            </div>
-        </div>
-    </header>
+    @include('partials.topbar', ['title' => 'Pesanan Masuk', 'subtitle' => 'Kelola pesanan dan pembayaran pelanggan', 'role' => 'Admin Kasir'])
 
     @if (session('success'))
-        <div class="alert success">{{ session('success') }}</div>
+        <div class="toast-message is-visible">{{ session('success') }}</div>
     @endif
 
     <section class="admin-panel">
@@ -72,13 +42,19 @@
                                 @endforeach
                             </td>
                             <td>Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
-                            <td><span class="badge {{ $order->status }}">{{ $order->status === 'completed' ? 'Selesai' : ucfirst($order->status) }}</span></td>
+                            <td><span class="badge {{ $order->status }}">{{ $order->status === 'completed' ? 'Selesai' : ($order->status === 'processing' ? 'Proses' : ucfirst($order->status)) }}</span></td>
                             <td>
                                 @if ($order->status === 'pending')
-                                    <form method="POST" action="{{ route('admin.orders.paid', $order) }}">
+                                    <form method="POST" action="{{ route('admin.orders.process', $order) }}">
                                         @csrf
                                         @method('PATCH')
-                                        <button class="btn-konfirmasi" type="submit">Konfirmasi</button>
+                                        <button class="btn-konfirmasi" type="submit">Proses</button>
+                                    </form>
+                                @elseif ($order->status === 'processing')
+                                    <form method="POST" action="{{ route('admin.orders.complete', $order) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button class="btn-konfirmasi" type="submit">Selesai</button>
                                     </form>
                                 @else
                                     <span class="muted-text">Selesai</span>

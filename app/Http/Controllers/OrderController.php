@@ -14,6 +14,7 @@ class OrderController extends Controller
         $validated = $request->validate([
             'table_id' => ['required', 'exists:tables,id'],
             'note' => ['nullable', 'string', 'max:500'],
+            'source' => ['nullable', 'string', 'max:30'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['required', 'exists:menu_items,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
@@ -35,7 +36,9 @@ class OrderController extends Controller
                 ];
             });
 
-            $total = $items->sum('subtotal');
+            $subtotal = $items->sum('subtotal');
+            $tax = (int) round($subtotal * 0.11);
+            $total = $subtotal + $tax;
 
             $order = Order::create([
                 'table_id' => $validated['table_id'],
@@ -48,6 +51,12 @@ class OrderController extends Controller
 
             return $order;
         });
+
+        if (($validated['source'] ?? null) === 'customer') {
+            return redirect()
+                ->route('customer.menu.table', $order->table?->number ?? $request->input('table_number', 1))
+                ->with('success', 'Pesanan #' . $order->id . ' berhasil dikirim ke kasir.');
+        }
 
         return redirect()
             ->route('pos.index')
