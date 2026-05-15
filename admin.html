@@ -9,131 +9,57 @@
 <body class="admin-body">
 
     <div id="login-screen" class="login-container">
-        <div class="login-logo">
-            <img src="logo-4sr.png" alt="Logo 4SR" class="brand-logo-img login-brand-img">
-        </div>
-
         <h2>Login Admin</h2>
-        <p class="login-subtitle">Masuk untuk mengelola pesanan restoran</p>
-
-        <input type="text" id="username" placeholder="Username" value="admin">
-        <input type="password" id="password" placeholder="Password" value="123">
-
-        <button class="primary-button full" onclick="loginAdmin()">Masuk</button>
-
-        <p id="login-error" class="login-error">
-            Username atau password salah!
-        </p>
+        <input type="text" id="username" placeholder="Username (isi: admin)" value="admin">
+        <input type="password" id="password" placeholder="Password (isi: 123)" value="123">
+        <button class="btn" onclick="loginAdmin()">Masuk</button>
+        <p id="login-error" style="color: red; display: none;">Username/Password salah!</p>
     </div>
 
     <div id="admin-dashboard" style="display: none;">
-        <aside class="sidebar">
-            <div>
-                <div class="sidebar-brand">
-                    <img src="logo-4sr.png" alt="Logo 4SR" class="brand-logo-img">
+        <nav class="navbar admin-nav">
+            <h2>Dashboard Sikasir-4SR</h2>
+            <button class="btn btn-danger" onclick="logoutAdmin()">Logout</button>
+        </nav>
 
-                    <div>
-                        <h3>Sikasir-4SR</h3>
-                        <p>Admin panel</p>
-                    </div>
-                </div>
+        <div class="admin-content">
+            <div class="admin-panel">
+            <h3>Konfirmasi Pesanan & Pembayaran</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Meja</th>
+                        <th>Pesanan</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-pesanan-body">
+                    <tr>
+                        <td colspan="5" style="text-align:center;">Memuat data pesanan...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-                <ul class="sidebar-menu">
-                    <li>
-                        <a href="#" class="active">
-                            <span>📋</span>
-                            Pesanan
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index.html">
-                            <span>🛒</span>
-                            Kasir
-                        </a>
-                    </li>
-                </ul>
+            <div class="admin-panel mt-20">
+                <h3>Kelola Menu</h3>
+                <button class="btn btn-add">+ Tambah Menu Baru</button>
+                <table class="admin-table mt-10">
+                    <tr>
+                        <th>Nama Menu</th>
+                        <th>Harga</th>
+                        <th>Aksi</th>
+                    </tr>
+                    <tr>
+                        <td>Nasi Goreng Spesial</td>
+                        <td>Rp 25.000</td>
+                        <td><button class="btn-danger">Hapus</button></td>
+                    </tr>
+                </table>
             </div>
-
-            <button class="logout-button" onclick="logoutAdmin()">
-                ↪ Keluar
-            </button>
-        </aside>
-
-        <main class="main-content">
-            <header class="top-header">
-                <div>
-                    <h1>Dashboard Admin</h1>
-                    <p>Kelola pesanan dan pembayaran pelanggan</p>
-                </div>
-
-                <div class="user-card">
-                    <div class="avatar">AU</div>
-                    <div>
-                        <h4>Akbar Udin</h4>
-                        <p>Admin Kasir</p>
-                    </div>
-                </div>
-            </header>
-
-            <section class="admin-panel">
-                <div class="panel-header">
-                    <div>
-                        <h2>Konfirmasi Pesanan & Pembayaran</h2>
-                        <p>Data pesanan masuk dari halaman kasir.</p>
-                    </div>
-                </div>
-
-                <div class="table-wrapper">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Meja</th>
-                                <th>Pesanan</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabel-pesanan-body">
-                            <tr>
-                                <td colspan="5" class="table-empty">Memuat data pesanan...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section class="admin-panel">
-                <div class="panel-header">
-                    <div>
-                        <h2>Kelola Menu</h2>
-                        <p>Contoh tampilan data menu restoran.</p>
-                    </div>
-                    <button class="primary-button">+ Tambah Menu Baru</button>
-                </div>
-
-                <div class="table-wrapper">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Nama Menu</th>
-                                <th>Harga</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Nasi Goreng Spesial</td>
-                                <td>Rp 25.000</td>
-                                <td>
-                                    <button class="danger-button">Hapus</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
+        </div>
     </div>
 
     <script src="script.js"></script>
