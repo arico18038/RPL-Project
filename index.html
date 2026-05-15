@@ -3,72 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CashDig-4SR - Pelanggan</title>
+    <title>Sikasir-4SR - Kasir</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="pos-body">
 
-    <nav class="navbar">
-        <div class="logo"></div>
-        
-        <ul class="nav-links">
-            <li><a href="#beranda" class="active">Beranda</a></li>
-            <li><a href="#menu">Pilih Menu</a></li>
-            <li><a href="#keranjang">Lihat Pesanan</a></li>
-            <li><a href="#tentang">Tentang</a></li>
-            <li><a href="tel:+6281234567890">Kontak</a></li> 
-        </ul>
+    <aside class="sidebar">
+        <div>
+            <div class="sidebar-brand">
+                <img src="logo-4sr.png" alt="Logo 4SR" class="brand-logo-img">
 
-        <div class="admin-menu">
-            <a href="admin.html" class="btn-admin">⚙️ Login Admin</a>
-        </div>
-    </nav>
+                <div>
+                    <h3>Sikasir-4SR</h3>
+                    <p>Sistem kasir 4SR</p>
+                </div>
 
-    <section id="beranda" class="hero">
-        <div class="content">
-            <h1>CashDig-4SR</h1>
-            <p class="subtitle">Sistem Kasir Restoran Berbasis QR Code</p>
-            <div class="line"></div>
-            <p class="desc">
-                Selamat datang! Silakan pilih menu langsung dari smartphone Anda. Praktis, cepat, dan tanpa antri.
-            </p>
-            <a href="#menu" class="btn">Pesan Sekarang</a>
-        </div>
-    </section>
-
-    <section id="menu" class="menu-section">
-    <div class="section-title">
-        <h2>Daftar Menu Kami</h2>
-        <p>Pilih hidangan favorit Anda</p>
-    </div>
-    
-    <div id="container-menu" class="menu-grid">
-        <p style="text-align: center;">Sedang memuat menu...</p>
-    </div>
-</section>
-
-    <section id="keranjang" class="cart-section">
-        <div class="section-title">
-            <h2>Pesanan Anda</h2>
-            <p>Periksa kembali pesanan Anda sebelum dikirim ke dapur</p>
-        </div>
-        
-        <div class="cart-container">
-            <ul id="daftar-pesanan" class="cart-list">
-                <li class="empty-cart">Belum ada menu yang dipilih.</li>
-            </ul>
-            
-            <div class="cart-summary">
-                <h3>Total Bayar: <span id="total-harga">Rp 0</span></h3>
-                <button class="btn btn-checkout" onclick="kirimPesanan()">Kirim Pesanan</button>
+                <button class="sidebar-toggle">‹</button>
             </div>
-        </div>
-    </section>
 
-    <section id="tentang" class="about-section">
-        <h2>Tentang CashDig-4SR</h2>
-        <p>CashDig-4SR adalah inovasi sistem pemesanan digital untuk memudahkan Anda memesan makanan tanpa perlu menunggu pelayan. Cukup scan, pesan, dan nikmati!</p>
-    </section>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#kasir" class="active">
+                        <span>🛒</span>
+                        Kasir
+                    </a>
+                </li>
+                <li>
+                    <a href="#tentang">
+                        <span>⚙️</span>
+                        Tentang Kami
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <a href="admin.html" class="logout-link">
+            <span>↪</span>
+            Login Admin
+        </a>
+    </aside>
+
+    <main class="main-content" id="kasir">
+        <header class="top-header">
+            <div>
+                <h1>Kasir</h1>
+                <p>Rumah Makan 4SR</p>
+            </div>
+
+            <div class="header-actions">
+                <div class="time-card">
+                    <span>Waktu</span>
+                    <strong id="jam-sekarang">--:--:--</strong>
+                </div>
+
+                <div class="user-card">
+                    <div class="avatar">AU</div>
+                    <div>
+                        <h4>Akbar Udin</h4>
+                        <p>Admin Kasir</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="pos-layout">
+            <div class="product-area">
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" id="search-menu" placeholder="Cari produk (F2)">
+                </div>
+
+                <div class="category-tabs">
+                    <button class="category-btn active" onclick="filterKategori('semua', this)">Semua produk</button>
+                    <button class="category-btn" onclick="filterKategori('makanan', this)">Makanan</button>
+                    <button class="category-btn" onclick="filterKategori('minuman', this)">Minuman</button>
+                    <button class="category-btn" onclick="filterKategori('lainnya', this)">Lainnya</button>
+                </div>
+
+                <div id="container-menu" class="product-grid">
+                    <p class="loading-text">Sedang memuat menu...</p>
+                </div>
+            </div>
+
+            <aside class="payment-summary">
+                <h2>Ringkasan Pembayaran</h2>
+
+                <div class="summary-section">
+                    <h4>Item Dipilih</h4>
+
+                    <div id="empty-cart-box" class="empty-cart-box">
+                        <span>🛒</span>
+                        <p>Keranjang masih kosong</p>
+                    </div>
+
+                    <ul id="daftar-pesanan" class="cart-list"></ul>
+                </div>
+
+                <div class="summary-row">
+                    <span>Sub total</span>
+                    <strong id="subtotal-harga">Rp 0</strong>
+                </div>
+
+                <div class="discount-box">
+                    <label>Diskon (F7)</label>
+                    <div>
+                        <select id="tipe-diskon" onchange="updateTampilanKeranjang()">
+                            <option value="persen">%</option>
+                            <option value="rupiah">Rp</option>
+                        </select>
+                        <input type="number" id="nilai-diskon" value="0" min="0" oninput="updateTampilanKeranjang()">
+                    </div>
+                </div>
+
+                <div class="summary-row">
+                    <span>PPN 11%</span>
+                    <strong id="ppn-harga">Rp 0</strong>
+                </div>
+
+                <div class="total-box">
+                    <span>Total pembayaran</span>
+                    <strong id="total-harga">Rp 0</strong>
+                </div>
+
+                <div class="payment-method">
+                    <p>Metode Pembayaran Hanya Bisa:</p>
+                    <button>💵 Tunai</button>
+                </div>
+
+                <button class="pay-button" id="btn-bayar" onclick="kirimPesanan()" disabled>
+                    Bayar (F9)
+                </button>
+
+                <button class="clear-button" onclick="kosongkanKeranjang()">
+                    🗑 Hapus keranjang
+                </button>
+            </aside>
+        </section>
+
+        <section id="tentang" class="about-pos">
+            <h2>Tentang Sikasir-4SR</h2>
+            <p>
+                Sikasir-4SR adalah sistem kasir digital untuk restoran yang memudahkan proses pemesanan,
+                pembayaran, dan pengelolaan menu secara modern.
+            </p>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>

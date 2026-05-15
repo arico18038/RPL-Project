@@ -1,136 +1,421 @@
 // =========================================================
-// BAGIAN 1: LOGIKA UNTUK HALAMAN PELANGGAN (CASH DIG-4SR)
+// KONFIGURASI
 // =========================================================
 
 let keranjang = [];
 let totalHarga = 0;
+let semuaMenu = [];
+let kategoriAktif = 'semua';
 
-// Jalankan fungsi ini saat halaman pertama kali dibuka
-document.addEventListener("DOMContentLoaded", function() {
+const BASE_URL = 'http://192.168.0.104:8000';
+
+// Data contoh agar tampilan tetap muncul saat API belum aktif
+const menuFallback = [
+    {
+        id: 1,
+        name: 'Mie Goreng Telur',
+        price: 12000,
+        category: 'Makanan',
+        code: 'BRG-051',
+        stock: 120,
+        image_url: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 2,
+        name: 'Mie Goreng Telur + Sosis + Bakso',
+        price: 18000,
+        category: 'Makanan',
+        code: 'BRG-052',
+        stock: 33,
+        image_url: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 3,
+        name: 'Roti Bakar Madu Rasa',
+        price: 15000,
+        category: 'Makanan',
+        code: 'BRG-083',
+        stock: 32,
+        image_url: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 4,
+        name: 'Martabak Manis Coklat',
+        price: 15000,
+        category: 'Makanan',
+        code: 'BRG-041',
+        stock: 3,
+        image_url: 'https://images.unsplash.com/photo-1616690710400-a16d146927c5?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 5,
+        name: 'Air Mineral 600ml',
+        price: 5000,
+        category: 'Minuman',
+        code: 'BRG-001',
+        stock: 120,
+        image_url: 'https://images.unsplash.com/photo-1564419320461-6870880221ad?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 6,
+        name: 'Es Teh Jumbo',
+        price: 8000,
+        category: 'Minuman',
+        code: 'BRG-002',
+        stock: 81,
+        image_url: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 7,
+        name: 'Ocha 500ml',
+        price: 8000,
+        category: 'Minuman',
+        code: 'BRG-003',
+        stock: 32,
+        image_url: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=800&q=80'
+    }
+];
+
+document.addEventListener("DOMContentLoaded", function () {
+    jalankanJam();
+
     if (document.getElementById('container-menu')) {
         ambilDataMenu();
+        aktifkanPencarian();
     }
 });
 
-// FUNGSI 1: MENGAMBIL DATA MENU DARI API LARAVEL
+// =========================================================
+// JAM
+// =========================================================
+
+function jalankanJam() {
+    const jamElement = document.getElementById('jam-sekarang');
+
+    if (!jamElement) return;
+
+    setInterval(() => {
+        const sekarang = new Date();
+        jamElement.innerText = sekarang.toLocaleTimeString('id-ID');
+    }, 1000);
+}
+
+// =========================================================
+// MENU PRODUK
+// =========================================================
+
 async function ambilDataMenu() {
     const containerMenu = document.getElementById('container-menu');
 
     try {
-        // Panggil API Laravel
-        const response = await fetch('http://192.168.0.110:8000/api/menu', {
+        const response = await fetch(`${BASE_URL}/api/menu`, {
             headers: {
                 'Accept': 'application/json'
             }
         });
+
         const hasil = await response.json();
 
         if (hasil.success) {
-            const daftarMenu = hasil.data;
-            containerMenu.innerHTML = ''; // Kosongkan kontainer sebelum diisi data
+            semuaMenu = hasil.data.map((menu, index) => ({
+                ...menu,
+                category: menu.category || menu.kategori || tentukanKategori(menu.name),
+                code: menu.code || `BRG-${String(index + 1).padStart(3, '0')}`,
+                stock: menu.stock || menu.stok || 0
+            }));
 
-            // Looping data dari database
-            daftarMenu.forEach(menu => {
-                
-                // Logika pengecekan gambar dari kode Anda
-                const pathGambar = menu.image_url 
-                    ? `http://192.168.0.110:8000/images/menu/${menu.image_url}` 
-                    : 'https://via.placeholder.com/150'; // Gambar cadangan jika di database kosong
-
-                // Memasukkan data ke dalam HTML
-                containerMenu.innerHTML += `
-                    <div class="menu-card">
-                        <img src="${pathGambar}" alt="${menu.name}" class="menu-img-style" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;">
-                        
-                        <h3>${menu.name}</h3>
-                        <p>Rp ${parseInt(menu.price).toLocaleString('id-ID')}</p>
-                        <button class="btn-pesan" onclick="tambahPesanan('${menu.name}', ${menu.price})">Tambah</button>
-                    </div>
-                `;
-            });
+            renderMenu();
+        } else {
+            semuaMenu = menuFallback;
+            renderMenu();
         }
+
     } catch (error) {
         console.error("Gagal mengambil menu:", error);
-        containerMenu.innerHTML = '<p style="text-align:center; color:red;">Gagal memuat menu. Pastikan server Laravel sudah menyala di IP yang benar.</p>';
+        semuaMenu = menuFallback;
+        renderMenu();
     }
 }
 
-// FUNGSI 2: LOGIKA KERANJANG BELANJA
-function tambahPesanan(namaMenu, harga) {
-    keranjang.push({ nama: namaMenu, harga: harga });
-    totalHarga += harga;
-    
-    // Cek apakah elemen daftar pesanan ada
-    if (document.getElementById('daftar-pesanan')) {
-        updateTampilanKeranjang();
+function renderMenu() {
+    const containerMenu = document.getElementById('container-menu');
+    const keyword = document.getElementById('search-menu')?.value.toLowerCase() || '';
+
+    let dataMenu = semuaMenu.filter(menu => {
+        const nama = menu.name.toLowerCase();
+        const kategori = String(menu.category || '').toLowerCase();
+
+        const cocokKeyword = nama.includes(keyword);
+        const cocokKategori =
+            kategoriAktif === 'semua' ||
+            kategori.includes(kategoriAktif);
+
+        return cocokKeyword && cocokKategori;
+    });
+
+    containerMenu.innerHTML = '';
+
+    if (dataMenu.length === 0) {
+        containerMenu.innerHTML = `
+            <p class="loading-text">Menu tidak ditemukan.</p>
+        `;
+        return;
     }
-    alert(namaMenu + " berhasil ditambahkan ke pesanan!");
+
+    dataMenu.forEach(menu => {
+        const pathGambar = getGambarMenu(menu);
+        const kategori = menu.category || tentukanKategori(menu.name);
+        const kode = menu.code || `BRG-${menu.id}`;
+        const stok = menu.stock || menu.stok || 0;
+
+        containerMenu.innerHTML += `
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="${pathGambar}" alt="${menu.name}">
+                    <span class="product-badge">${kategori}</span>
+                </div>
+
+                <div class="product-info">
+                    <h3>${menu.name}</h3>
+                    <p class="product-code">${kode}</p>
+
+                    <div class="product-bottom">
+                        <div>
+                            <p class="product-price">Rp ${parseInt(menu.price).toLocaleString('id-ID')}</p>
+                            <p class="product-stock">Stok: ${stok}</p>
+                        </div>
+
+                        <button 
+                            class="add-button"
+                            onclick='tambahPesanan(${menu.id}, ${JSON.stringify(menu.name)}, ${menu.price})'>
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
 }
 
-function hapusPesanan(index) {
-    totalHarga -= keranjang[index].harga;
-    keranjang.splice(index, 1);
+function getGambarMenu(menu) {
+    if (!menu.image_url) {
+        return 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80';
+    }
+
+    if (String(menu.image_url).startsWith('http')) {
+        return menu.image_url;
+    }
+
+    return `${BASE_URL}/images/menu/${menu.image_url}`;
+}
+
+function tentukanKategori(namaMenu) {
+    const nama = namaMenu.toLowerCase();
+
+    if (
+        nama.includes('air') ||
+        nama.includes('teh') ||
+        nama.includes('kopi') ||
+        nama.includes('ocha') ||
+        nama.includes('jus') ||
+        nama.includes('minum')
+    ) {
+        return 'Minuman';
+    }
+
+    return 'Makanan';
+}
+
+function filterKategori(kategori, button) {
+    kategoriAktif = kategori;
+
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    button.classList.add('active');
+    renderMenu();
+}
+
+function aktifkanPencarian() {
+    const inputSearch = document.getElementById('search-menu');
+
+    if (!inputSearch) return;
+
+    inputSearch.addEventListener('input', renderMenu);
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'F2') {
+            event.preventDefault();
+            inputSearch.focus();
+        }
+
+        if (event.key === 'F9') {
+            event.preventDefault();
+            kirimPesanan();
+        }
+    });
+}
+
+// =========================================================
+// KERANJANG
+// =========================================================
+
+function tambahPesanan(id, nama, harga) {
+    const itemSudahAda = keranjang.find(item => item.id === id);
+
+    if (itemSudahAda) {
+        itemSudahAda.quantity += 1;
+    } else {
+        keranjang.push({
+            id: id,
+            nama: nama,
+            harga: harga,
+            quantity: 1
+        });
+    }
+
     updateTampilanKeranjang();
 }
 
 function updateTampilanKeranjang() {
     const daftarPesanan = document.getElementById('daftar-pesanan');
-    const teksTotalHarga = document.getElementById('total-harga');
-    
-    if (!daftarPesanan) return; 
+    const emptyCartBox = document.getElementById('empty-cart-box');
+    const subtotalHarga = document.getElementById('subtotal-harga');
+    const ppnHarga = document.getElementById('ppn-harga');
+    const totalHargaElement = document.getElementById('total-harga');
+    const btnBayar = document.getElementById('btn-bayar');
+
+    if (!daftarPesanan) return;
 
     daftarPesanan.innerHTML = '';
-    
+
+    totalHarga = keranjang.reduce((total, item) => {
+        return total + item.harga * item.quantity;
+    }, 0);
+
     if (keranjang.length === 0) {
-        daftarPesanan.innerHTML = '<li class="empty-cart">Belum ada menu yang dipilih.</li>';
+        daftarPesanan.classList.remove('active');
+
+        if (emptyCartBox) emptyCartBox.style.display = 'grid';
+        if (btnBayar) btnBayar.disabled = true;
     } else {
+        daftarPesanan.classList.add('active');
+
+        if (emptyCartBox) emptyCartBox.style.display = 'none';
+        if (btnBayar) btnBayar.disabled = false;
+
         keranjang.forEach((item, index) => {
             daftarPesanan.innerHTML += `
                 <li>
-                    <span>${item.nama}</span>
-                    <span>Rp ${item.harga.toLocaleString('id-ID')} 
-                        <button class="btn-hapus" onclick="hapusPesanan(${index})">X</button>
-                    </span>
+                    <div>
+                        <p class="cart-item-name">${item.nama}</p>
+                        <p>${item.quantity} x Rp ${item.harga.toLocaleString('id-ID')}</p>
+                        <button class="btn-hapus" onclick="hapusPesanan(${index})">Hapus</button>
+                    </div>
+
+                    <p class="cart-item-price">
+                        Rp ${(item.harga * item.quantity).toLocaleString('id-ID')}
+                    </p>
                 </li>
             `;
         });
     }
-    teksTotalHarga.innerText = 'Rp ' + totalHarga.toLocaleString('id-ID');
+
+    const diskon = hitungDiskon(totalHarga);
+    const subtotalSetelahDiskon = Math.max(totalHarga - diskon, 0);
+    const ppn = Math.round(subtotalSetelahDiskon * 0.11);
+    const totalAkhir = subtotalSetelahDiskon + ppn;
+
+    if (subtotalHarga) subtotalHarga.innerText = 'Rp ' + totalHarga.toLocaleString('id-ID');
+    if (ppnHarga) ppnHarga.innerText = 'Rp ' + ppn.toLocaleString('id-ID');
+    if (totalHargaElement) totalHargaElement.innerText = 'Rp ' + totalAkhir.toLocaleString('id-ID');
 }
 
-// FUNGSI 3: MENGIRIM PESANAN KE DASHBOARD ADMIN (VIA LOCALSTORAGE)
-function kirimPesanan() {
-    if (keranjang.length === 0) {
-        alert("Pilih menu terlebih dahulu sebelum mengirim pesanan!");
-        return;
+function hitungDiskon(subtotal) {
+    const tipeDiskon = document.getElementById('tipe-diskon')?.value || 'persen';
+    const nilaiDiskon = parseInt(document.getElementById('nilai-diskon')?.value || 0);
+
+    if (tipeDiskon === 'persen') {
+        return Math.round(subtotal * nilaiDiskon / 100);
     }
 
-    // Membuat objek data pesanan baru
-    const pesananBaru = {
-        id: Date.now(),
-        meja: Math.floor(Math.random() * 10) + 1, // Nomor meja acak
-        items: keranjang.map(i => i.nama).join(", "),
-        total: totalHarga,
-        status: "Menunggu"
-    };
+    return nilaiDiskon;
+}
 
-    // Menyimpan pesanan ke LocalStorage agar bisa dibaca oleh halaman Admin
-    let semuaPesanan = JSON.parse(localStorage.getItem('databasePesanan')) || [];
-    semuaPesanan.push(pesananBaru);
-    localStorage.setItem('databasePesanan', JSON.stringify(semuaPesanan));
+function hapusPesanan(index) {
+    if (keranjang[index].quantity > 1) {
+        keranjang[index].quantity -= 1;
+    } else {
+        keranjang.splice(index, 1);
+    }
 
-    alert("Pesanan berhasil dikirim ke dapur! Silakan siapkan pembayaran Anda di kasir.");
-    
-    // Reset keranjang
+    updateTampilanKeranjang();
+}
+
+function kosongkanKeranjang() {
     keranjang = [];
     totalHarga = 0;
     updateTampilanKeranjang();
-    window.location.href = "#beranda";
 }
 
+// =========================================================
+// KIRIM PESANAN
+// =========================================================
+
+async function kirimPesanan() {
+    if (keranjang.length === 0) {
+        alert("Keranjang masih kosong!");
+        return;
+    }
+
+    const diskon = hitungDiskon(totalHarga);
+    const subtotalSetelahDiskon = Math.max(totalHarga - diskon, 0);
+    const ppn = Math.round(subtotalSetelahDiskon * 0.11);
+    const totalAkhir = subtotalSetelahDiskon + ppn;
+
+    const dataKeDatabase = {
+        table_id: 1,
+        total_price: totalAkhir,
+        note: "Pesanan dari Kasir Web",
+        items: keranjang.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+            price: item.harga
+        }))
+    };
+
+    try {
+        const response = await fetch(`${BASE_URL}/api/pesanan`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(dataKeDatabase)
+        });
+
+        const hasil = await response.json();
+
+        if (response.ok) {
+            alert("Pembayaran berhasil dan pesanan masuk!");
+
+            keranjang = [];
+            totalHarga = 0;
+            updateTampilanKeranjang();
+        } else {
+            console.error("Detail Error:", hasil);
+            alert("Gagal mengirim pesanan: " + (hasil.message || "Cek console browser"));
+        }
+
+    } catch (error) {
+        console.error("Koneksi Error:", error);
+        alert("Koneksi ke server terputus.");
+    }
+}
 
 // =========================================================
-// BAGIAN 2: LOGIKA UNTUK HALAMAN ADMIN
+// ADMIN
 // =========================================================
 
 function loginAdmin() {
@@ -141,7 +426,7 @@ function loginAdmin() {
     if (user === 'admin' && pass === '123') {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('admin-dashboard').style.display = 'block';
-        
+
         tampilkanPesananDiAdmin();
     } else {
         errorMsg.style.display = 'block';
@@ -151,50 +436,116 @@ function loginAdmin() {
 function logoutAdmin() {
     document.getElementById('admin-dashboard').style.display = 'none';
     document.getElementById('login-screen').style.display = 'block';
-    document.getElementById('username').value = '';
-    document.getElementById('password').value = '';
+
+    document.getElementById('username').value = 'admin';
+    document.getElementById('password').value = '123';
     document.getElementById('login-error').style.display = 'none';
 }
 
-function tampilkanPesananDiAdmin() {
+async function tampilkanPesananDiAdmin() {
     const tabelBody = document.getElementById('tabel-pesanan-body');
+
     if (!tabelBody) return;
 
-    // Ambil data dari LocalStorage
-    const semuaPesanan = JSON.parse(localStorage.getItem('databasePesanan')) || [];
-    tabelBody.innerHTML = '';
+    try {
+        const response = await fetch(`${BASE_URL}/api/orders`, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
 
-    semuaPesanan.forEach((p, index) => {
-        let warnaBadge = p.status === "Menunggu" ? "#ffc107" : (p.status === "Diproses" ? "#17a2b8" : "#28a745");
-        
-        tabelBody.innerHTML += `
+        const hasil = await response.json();
+
+        if (hasil.success) {
+            tabelBody.innerHTML = '';
+
+            if (hasil.data.length === 0) {
+                tabelBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="table-empty">Belum ada pesanan masuk.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            hasil.data.forEach(order => {
+                let detailItem = "Pesanan Web";
+
+                if (order.order_items && order.order_items.length > 0) {
+                    detailItem = order.order_items.map(item =>
+                        `${item.menu_item ? item.menu_item.name : 'Menu'} (x${item.quantity})`
+                    ).join(", ");
+                } else if (order.note) {
+                    detailItem = order.note;
+                }
+
+                const status = order.status || 'pending';
+                const badgeClass = status === 'completed' || status === 'paid'
+                    ? 'completed'
+                    : 'pending';
+
+                tabelBody.innerHTML += `
+                    <tr>
+                        <td>Meja ${order.table_id || '-'}</td>
+                        <td>${detailItem}</td>
+                        <td>Rp ${parseInt(order.total_price).toLocaleString('id-ID')}</td>
+                        <td>
+                            <span class="badge ${badgeClass}">
+                                ${status}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-konfirmasi" onclick="updateStatus(${order.id}, 'completed')">
+                                Tandai Lunas
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+        } else {
+            tabelBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="table-empty">Data tidak ditemukan.</td>
+                </tr>
+            `;
+        }
+
+    } catch (error) {
+        console.error("Gagal memuat data admin:", error);
+
+        tabelBody.innerHTML = `
             <tr>
-                <td>Meja ${p.meja}</td>
-                <td>${p.items}</td>
-                <td>Rp ${p.total.toLocaleString('id-ID')}</td>
-                <td><span class="badge" style="background:${warnaBadge}; color:white; padding:5px 10px; border-radius:15px;">${p.status}</span></td>
-                <td>
-                    <button class="btn-status" onclick="updateStatus(${index}, 'Diproses')" style="background:#17a2b8; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;">Masak</button>
-                    <button class="btn-status" onclick="updateStatus(${index}, 'Selesai')" style="background:#28a745; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;">Selesai</button>
-                    <button class="btn-danger" onclick="hapusData(${index})" style="background:#dc3545; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;">Hapus</button>
+                <td colspan="5" class="table-empty" style="color: red;">
+                    Gagal menghubungi server API.
                 </td>
             </tr>
         `;
-    });
+    }
 }
 
-function updateStatus(index, statusBaru) {
-    let semuaPesanan = JSON.parse(localStorage.getItem('databasePesanan'));
-    semuaPesanan[index].status = statusBaru;
-    localStorage.setItem('databasePesanan', JSON.stringify(semuaPesanan));
-    tampilkanPesananDiAdmin();
-}
+async function updateStatus(idPesanan, statusBaru) {
+    try {
+        const response = await fetch(`${BASE_URL}/api/orders/${idPesanan}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                status: statusBaru
+            })
+        });
 
-function hapusData(index) {
-    if(confirm("Yakin ingin menghapus pesanan ini?")) {
-        let semuaPesanan = JSON.parse(localStorage.getItem('databasePesanan'));
-        semuaPesanan.splice(index, 1);
-        localStorage.setItem('databasePesanan', JSON.stringify(semuaPesanan));
-        tampilkanPesananDiAdmin();
+        if (response.ok) {
+            tampilkanPesananDiAdmin();
+            alert("Status pesanan berhasil diperbarui!");
+        } else {
+            alert("Gagal memperbarui status ke server.");
+        }
+
+    } catch (error) {
+        console.error("Error Updating Status:", error);
+        alert("Terjadi kesalahan saat memperbarui status.");
     }
 }
