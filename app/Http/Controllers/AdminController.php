@@ -18,7 +18,7 @@ class AdminController extends Controller
             ->orderBy('name')
             ->get();
         $categories = Category::orderBy('name')->get();
-        $lowStockCount = $menus->filter(fn ($menu, $index) => $this->displayStock($menu, $index) < 20)->count();
+        $lowStockCount = $menus->filter(fn ($menu) => $menu->stock < 20)->count();
 
         return view('admin.inventory', compact('menus', 'categories', 'lowStockCount'));
     }
@@ -68,6 +68,7 @@ class AdminController extends Controller
             'name' => $validated['name'],
             'category_id' => $validated['category_id'],
             'price' => $validated['price'],
+            'stock' => $validated['stock'],
             'description' => $validated['description'] ?? null,
             'image_url' => $this->normalizeImageUrl($validated['image_url'] ?? null),
             'is_available' => (bool) $validated['is_available'],
@@ -86,6 +87,7 @@ class AdminController extends Controller
             'name' => $validated['name'],
             'category_id' => $validated['category_id'],
             'price' => $validated['price'],
+            'stock' => $validated['stock'],
             'description' => $validated['description'] ?? null,
             'image_url' => $this->normalizeImageUrl($validated['image_url'] ?? null),
             'is_available' => (bool) $validated['is_available'],
@@ -126,6 +128,7 @@ class AdminController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'category_id' => ['required', 'exists:categories,id'],
             'price' => ['required', 'numeric', 'min:0'],
+            'stock' => ['required', 'integer', 'min:0'],
             'description' => ['nullable', 'string', 'max:1000'],
             'image_url' => ['nullable', 'url', 'max:2048'],
             'is_available' => ['required', Rule::in(['0', '1'])],
@@ -137,19 +140,14 @@ class AdminController extends Controller
             'price.required' => 'Harga jual wajib diisi.',
             'price.numeric' => 'Harga jual harus berupa angka.',
             'price.min' => 'Harga jual tidak boleh kurang dari 0.',
+            'stock.required' => 'Stok wajib diisi.',
+            'stock.integer' => 'Stok harus berupa angka bulat.',
+            'stock.min' => 'Stok tidak boleh kurang dari 0.',
             'description.max' => 'Deskripsi maksimal 1000 karakter.',
             'image_url.url' => 'URL gambar harus berupa tautan yang valid.',
             'image_url.max' => 'URL gambar terlalu panjang. Maksimal 2048 karakter.',
             'is_available.required' => 'Status aktif wajib dipilih.',
         ]);
-    }
-
-    private function displayStock(MenuItem $menu, int $index): int
-    {
-        return match ($menu->id) {
-            5 => 3,
-            default => max(12, 133 - (($index + 1) * 13)),
-        };
     }
 
     private function normalizeImageUrl(?string $imageUrl): ?string

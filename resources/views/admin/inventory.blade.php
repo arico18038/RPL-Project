@@ -60,7 +60,7 @@
                 <tbody>
                     @forelse ($menus as $menu)
                         @php
-                            $stock = $menu->id === 5 ? 3 : max(12, 133 - ($loop->iteration * 13));
+                            $stock = $menu->stock;
                             $sellPrice = (float) $menu->price;
                             $buyPrice = $sellPrice * 0.55;
                         @endphp
@@ -75,18 +75,21 @@
                             <td>20</td>
                             <td><span class="badge {{ $menu->is_available ? 'completed' : 'pending' }}">{{ $menu->is_available ? 'Aktif' : 'Nonaktif' }}</span></td>
                             <td class="action-cell">
-                                <button
-                                    type="button"
-                                    class="edit-menu-button"
-                                    data-update-url="{{ route('admin.menu.update', $menu) }}"
-                                    data-delete-url="{{ route('admin.menu.destroy', $menu) }}"
-                                    data-name="{{ $menu->name }}"
-                                    data-category-id="{{ $menu->category_id }}"
-                                    data-price="{{ (float) $menu->price }}"
-                                    data-description="{{ $menu->description }}"
-                                    data-image-url="{{ $menu->image_url }}"
-                                    data-is-available="{{ $menu->is_available ? '1' : '0' }}"
-                                >Edit</button>
+                                <div class="action-buttons">
+                                    <button
+                                        type="button"
+                                        class="edit-menu-button"
+                                        data-update-url="{{ route('admin.menu.update', $menu) }}"
+                                        data-delete-url="{{ route('admin.menu.destroy', $menu) }}"
+                                        data-name="{{ $menu->name }}"
+                                        data-category-id="{{ $menu->category_id }}"
+                                        data-price="{{ (float) $menu->price }}"
+                                        data-stock="{{ $stock }}"
+                                        data-description="{{ $menu->description }}"
+                                        data-image-url="{{ $menu->image_url }}"
+                                        data-is-available="{{ $menu->is_available ? '1' : '0' }}"
+                                    >Edit</button>
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -129,6 +132,10 @@
                     <div>
                         <label for="price">Harga jual (Rp) *</label>
                         <input id="price" name="price" type="number" min="0" step="500" placeholder="Contoh: 15000" value="{{ old('price') }}" required>
+                    </div>
+                    <div>
+                        <label for="stock">Stok *</label>
+                        <input id="stock" name="stock" type="number" min="0" step="1" placeholder="Contoh: 50" value="{{ old('stock', 100) }}" required>
                     </div>
                 </div>
 

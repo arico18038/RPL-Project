@@ -12,38 +12,51 @@
         <ul class="sidebar-menu">
             <li>
                 <a href="{{ route('pos.index') }}" @class(['active' => ($active ?? '') === 'kasir'])>
-                    Kasir
+                    Menu
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.index') }}" @class(['active' => ($active ?? '') === 'barang'])>
-                    Barang & Stok
+                <a href="{{ route('about') }}" @class(['active' => ($active ?? '') === 'tentang'])>
+                    Tentang Kami
                 </a>
             </li>
-            <li>
-                <a href="{{ route('admin.history') }}" @class(['active' => ($active ?? '') === 'riwayat'])>
-                    Riwayat Transaksi
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.orders') }}" @class(['active' => ($active ?? '') === 'pesanan'])>
-                    Pesanan
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.report') }}" @class(['active' => ($active ?? '') === 'laporan'])>
-                    Laporan
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.settings') }}" @class(['active' => ($active ?? '') === 'pengaturan'])>
-                    Pengaturan
-                </a>
-            </li>
+
+            @auth
+                <li>
+                    <a href="{{ route('admin.index') }}" @class(['active' => ($active ?? '') === 'barang'])>
+                        Barang & Stok
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.history') }}" @class(['active' => ($active ?? '') === 'riwayat'])>
+                        Riwayat Transaksi
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.orders') }}" @class(['active' => ($active ?? '') === 'pesanan'])>
+                        Pesanan
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.report') }}" @class(['active' => ($active ?? '') === 'laporan'])>
+                        Laporan
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.settings') }}" @class(['active' => ($active ?? '') === 'pengaturan'])>
+                        Pengaturan
+                    </a>
+                </li>
+            @endauth
         </ul>
     </div>
 
-    <a href="{{ route('pos.index') }}" class="logout-link">
-        Keluar
-    </a>
+    @auth
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="logout-link">Keluar</button>
+        </form>
+    @else
+        <a href="{{ route('login') }}" class="logout-link login-link">Login Admin</a>
+    @endauth
 </aside>

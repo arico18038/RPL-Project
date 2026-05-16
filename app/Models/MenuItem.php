@@ -10,6 +10,7 @@ class MenuItem extends Model
         'name',
         'category_id',
         'price',
+        'stock',
         'image_url',
         'is_available',
         'description',
@@ -17,6 +18,7 @@ class MenuItem extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'stock' => 'integer',
         'is_available' => 'boolean',
     ];
 

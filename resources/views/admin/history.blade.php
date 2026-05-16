@@ -67,8 +67,10 @@
                             <td>Tunai</td>
                             <td><span class="badge {{ $order->status }}">{{ $order->status === 'completed' ? 'Selesai' : ($order->status === 'processing' ? 'Proses' : ucfirst($order->status)) }}</span></td>
                             <td class="action-cell">
-                                <button type="button">⊙</button>
-                                <button type="button">▣</button>
+                                <div class="action-buttons">
+                                    <button type="button">Lihat</button>
+                                    <button type="button">Cetak</button>
+                                </div>
                             </td>
                         </tr>
                     @empty

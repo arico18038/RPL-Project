@@ -53,12 +53,13 @@ function renderCart() {
     }
 
     const items = getCartItems();
+    const hasStockProblem = items.some((item) => item.quantity > item.stock);
     list.innerHTML = '';
     inputs.innerHTML = '';
 
     empty.style.display = items.length ? 'none' : 'grid';
     list.classList.toggle('active', items.length > 0);
-    payButton.disabled = items.length === 0;
+    payButton.disabled = items.length === 0 || hasStockProblem;
 
     const itemCount = items.reduce((total, item) => total + item.quantity, 0);
     if (cartCount) {
@@ -77,7 +78,7 @@ function renderCart() {
                     <button type="button" data-increase="${item.id}">+</button>
                 </div>
             </div>
-            <div class="cart-meta">${formatRupiah(item.price)} x ${item.quantity}</div>
+            <div class="cart-meta">${formatRupiah(item.price)} x ${item.quantity} | Stok: ${item.stock}</div>
             <div class="cart-line-bottom">
                 <div class="cart-item-price">${formatRupiah(item.price * item.quantity)}</div>
                 <button type="button" class="btn-hapus" data-remove="${item.id}">▱</button>
@@ -100,8 +101,14 @@ function addItem(button) {
         id,
         name: button.dataset.name,
         price: Number(button.dataset.price),
+        stock: Number(button.dataset.stock),
         quantity: 0,
     };
+
+    if (item.stock <= 0 || item.quantity >= item.stock) {
+        alert(`Stok ${item.name} hanya tersisa ${item.stock}. Sesuaikan jumlah pesanan sebelum bayar.`);
+        return;
+    }
 
     item.quantity += 1;
     cart.set(id, item);
@@ -111,6 +118,11 @@ function addItem(button) {
 function changeQuantity(id, direction) {
     const item = cart.get(id);
     if (!item) {
+        return;
+    }
+
+    if (direction > 0 && item.quantity >= item.stock) {
+        alert(`Stok ${item.name} hanya tersisa ${item.stock}.`);
         return;
     }
 
@@ -279,6 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
         menuForm.elements.name.value = data.name ?? '';
         menuForm.elements.category_id.value = data.categoryId ?? '';
         menuForm.elements.price.value = data.price ?? '';
+        menuForm.elements.stock.value = data.stock ?? '100';
         menuForm.elements.description.value = data.description ?? '';
         menuForm.elements.image_url.value = data.imageUrl ?? '';
         menuForm.elements.is_available.value = data.isAvailable ?? '1';
@@ -303,6 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 name: button.dataset.name,
                 categoryId: button.dataset.categoryId,
                 price: button.dataset.price,
+                stock: button.dataset.stock,
                 description: button.dataset.description,
                 imageUrl: button.dataset.imageUrl,
                 isAvailable: button.dataset.isAvailable,

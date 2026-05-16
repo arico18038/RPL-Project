@@ -11,9 +11,9 @@
         </div>
 
         <div class="user-card">
-            <div class="avatar">AH</div>
+            <div class="avatar">{{ auth()->check() ? 'AD' : 'PG' }}</div>
             <div>
-                <h4>Akbar Hidayat</h4>
+                <h4>{{ auth()->user()?->name ?? 'Pengunjung' }}</h4>
                 <p>{{ $role ?? 'Kasir' }}</p>
             </div>
         </div>

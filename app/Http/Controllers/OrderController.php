@@ -6,6 +6,7 @@ use App\Models\MenuItem;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
@@ -21,13 +22,32 @@ class OrderController extends Controller
         ]);
 
         $order = DB::transaction(function () use ($validated) {
-            $menuIds = collect($validated['items'])->pluck('id');
-            $menus = MenuItem::whereIn('id', $menuIds)->get()->keyBy('id');
+            $requestedItems = collect($validated['items'])
+                ->groupBy('id')
+                ->map(fn ($items, $id) => [
+                    'id' => $id,
+                    'quantity' => $items->sum('quantity'),
+                ])
+                ->values();
+            $menuIds = $requestedItems->pluck('id');
+            $menus = MenuItem::whereIn('id', $menuIds)->lockForUpdate()->get()->keyBy('id');
 
-            $items = collect($validated['items'])->map(function ($item) use ($menus) {
+            $items = $requestedItems->map(function ($item) use ($menus) {
                 $menu = $menus->get($item['id']);
                 $quantity = (int) $item['quantity'];
                 $price = (float) $menu->price;
+
+                if (!$menu->is_available || $menu->stock <= 0) {
+                    throw ValidationException::withMessages([
+                        'items' => "{$menu->name} sedang tidak tersedia.",
+                    ]);
+                }
+
+                if ($quantity > $menu->stock) {
+                    throw ValidationException::withMessages([
+                        'items' => "Stok {$menu->name} hanya tersisa {$menu->stock}. Sesuaikan jumlah pesanan sebelum bayar.",
+                    ]);
+                }
 
                 return [
                     'menu_item_id' => $menu->id,
@@ -48,6 +68,10 @@ class OrderController extends Controller
             ]);
 
             $order->order_items()->createMany($items->all());
+
+            $items->each(function ($item) use ($menus) {
+                $menus->get($item['menu_item_id'])->decrement('stock', $item['quantity']);
+            });
 
             return $order;
         });

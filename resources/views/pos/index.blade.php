@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Sikasir-4SR - Kasir')
+@section('title', 'Sikasir-4SR - Menu')
 @section('body_class', 'pos-body')
 
 @section('content')
 @include('partials.sidebar', ['active' => 'kasir'])
 
 <main class="main-content" id="kasir">
-    @include('partials.topbar', ['title' => 'Kasir', 'subtitle' => 'Rumah Makan 4SR', 'role' => 'Kasir'])
+    @include('partials.topbar', ['title' => 'Menu', 'subtitle' => 'Rumah Makan 4SR', 'role' => auth()->check() ? 'Admin' : 'Pengunjung'])
 
     @if (session('success'))
         <div class="toast-message is-visible">Produk berhasil ditambahkan</div>
@@ -36,7 +36,7 @@
             <div id="container-menu" class="product-grid">
                 @foreach ($menus as $menu)
                     @php
-                        $stock = $menu->id === 5 ? 3 : max(12, 133 - ($loop->iteration * 13));
+                        $stock = $menu->stock;
                         $code = 'BRG-' . str_pad((string) $menu->id, 3, '0', STR_PAD_LEFT);
                         $image = $menu->image_url && str_starts_with($menu->image_url, 'http') ? $menu->image_url : null;
                     @endphp
@@ -60,7 +60,15 @@
                                     <p @class(['product-stock', 'danger' => $stock < 20])>Stok: {{ $stock }}</p>
                                 </div>
 
-                                <button type="button" class="add-button" data-id="{{ $menu->id }}" data-name="{{ $menu->name }}" data-price="{{ $menu->price }}">+</button>
+                                <button
+                                    type="button"
+                                    class="add-button"
+                                    data-id="{{ $menu->id }}"
+                                    data-name="{{ $menu->name }}"
+                                    data-price="{{ $menu->price }}"
+                                    data-stock="{{ $stock }}"
+                                    @disabled($stock <= 0)
+                                >{{ $stock > 0 ? '+' : 'Habis' }}</button>
                             </div>
                         </div>
                     </article>
@@ -99,16 +107,21 @@
                 <strong id="subtotal-harga">Rp 0</strong>
             </div>
 
-            <div class="discount-box">
-                <label>Diskon (F7)</label>
-                <div>
-                    <select id="tipe-diskon">
-                        <option value="persen">%</option>
-                        <option value="rupiah">Rp</option>
-                    </select>
-                    <input type="number" id="nilai-diskon" value="0" min="0">
+            @auth
+                <div class="discount-box">
+                    <label>Diskon (F7)</label>
+                    <div>
+                        <select id="tipe-diskon">
+                            <option value="persen">%</option>
+                            <option value="rupiah">Rp</option>
+                        </select>
+                        <input type="number" id="nilai-diskon" value="0" min="0">
+                    </div>
                 </div>
-            </div>
+            @else
+                <input type="hidden" id="tipe-diskon" value="persen">
+                <input type="hidden" id="nilai-diskon" value="0">
+            @endauth
 
             <div class="summary-row">
                 <span>PPN 11%</span>
