@@ -10,12 +10,22 @@
             <strong id="jam-sekarang">--:--:-- WIB</strong>
         </div>
 
-        <div class="user-card">
-            <div class="avatar">{{ auth()->check() ? 'AD' : 'PG' }}</div>
-            <div>
-                <h4>{{ auth()->user()?->name ?? 'Pengunjung' }}</h4>
-                <p>{{ $role ?? 'Kasir' }}</p>
+        @guest
+            <a href="{{ route('login') }}" class="user-card profile-login-link" title="Login Admin">
+                <div class="avatar">PG</div>
+                <div>
+                    <h4>Pengunjung</h4>
+                    <p>Pengunjung</p>
+                </div>
+            </a>
+        @else
+            <div class="user-card">
+                <div class="avatar">AD</div>
+                <div>
+                    <h4>{{ auth()->user()?->name ?? 'Admin' }}</h4>
+                    <p>{{ $role ?? 'Admin' }}</p>
+                </div>
             </div>
-        </div>
+        @endguest
     </div>
 </header>

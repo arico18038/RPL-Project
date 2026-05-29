@@ -218,6 +218,22 @@ document.addEventListener('DOMContentLoaded', () => {
     updateClock();
     setInterval(updateClock, 1000);
 
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    if (localStorage.getItem('sidebar-collapsed') === 'true') {
+        document.body.classList.add('sidebar-collapsed');
+        if (sidebarToggle) {
+            sidebarToggle.setAttribute('aria-label', 'Tampilkan sidebar');
+            sidebarToggle.textContent = '>';
+        }
+    }
+
+    sidebarToggle?.addEventListener('click', () => {
+        const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
+        localStorage.setItem('sidebar-collapsed', String(isCollapsed));
+        sidebarToggle.setAttribute('aria-label', isCollapsed ? 'Tampilkan sidebar' : 'Ciutkan sidebar');
+        sidebarToggle.textContent = isCollapsed ? '>' : '<';
+    });
+
     document.querySelectorAll('.add-button').forEach((button) => {
         button.addEventListener('click', () => addItem(button));
     });

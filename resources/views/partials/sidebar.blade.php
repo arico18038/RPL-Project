@@ -6,7 +6,7 @@
                 <h3>Sikasir-4SR</h3>
                 <p>Sistem kasir-4SR</p>
             </div>
-            <button class="sidebar-toggle" type="button" aria-label="Ciutkan sidebar">&laquo;</button>
+            <button class="sidebar-toggle" type="button" aria-label="Ciutkan sidebar">&lt;</button>
         </div>
 
         <ul class="sidebar-menu">
@@ -56,7 +56,5 @@
             @csrf
             <button type="submit" class="logout-link">Keluar</button>
         </form>
-    @else
-        <a href="{{ route('login') }}" class="logout-link login-link">Login Admin</a>
     @endauth
 </aside>

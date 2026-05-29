@@ -52,6 +52,7 @@ body {
     top: 0;
     width: 240px;
     z-index: 10;
+    transition: width 0.2s ease, padding 0.2s ease;
 }
 
 .sidebar-brand {
@@ -91,6 +92,11 @@ body {
     font-size: 20px;
     height: 32px;
     width: 32px;
+}
+
+.sidebar-toggle {
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
 .sidebar-menu {
@@ -139,7 +145,38 @@ body {
 .main-content {
     margin-left: 240px;
     padding: 22px 24px 42px;
+    transition: margin-left 0.2s ease, width 0.2s ease;
     width: calc(100% - 240px);
+}
+
+.sidebar-collapsed .sidebar {
+    overflow: hidden;
+    padding-left: 12px;
+    padding-right: 12px;
+    width: 76px;
+}
+
+.sidebar-collapsed .sidebar-brand {
+    gap: 0;
+    grid-template-columns: 42px;
+    justify-content: center;
+}
+
+.sidebar-collapsed .sidebar-brand > div,
+.sidebar-collapsed .sidebar-menu,
+.sidebar-collapsed .logout-link {
+    display: none;
+}
+
+.sidebar-collapsed .sidebar-toggle {
+    margin-top: 12px;
+    position: static;
+    transform: none;
+}
+
+.sidebar-collapsed .main-content {
+    margin-left: 76px;
+    width: calc(100% - 76px);
 }
 
 .top-header {
@@ -185,6 +222,19 @@ body {
     align-items: center;
     display: flex;
     gap: 10px;
+}
+
+.profile-login-link {
+    color: var(--text);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.profile-login-link:hover {
+    background: #e4ecf8;
+    box-shadow: 0 8px 20px rgba(21, 89, 166, 0.12);
+    transform: translateY(-1px);
 }
 
 .avatar {
@@ -2098,9 +2148,42 @@ body {
         width: 100%;
     }
 
+    .sidebar-collapsed .sidebar {
+        padding-left: 20px;
+        padding-right: 20px;
+        width: 100%;
+    }
+
+    .sidebar-collapsed .sidebar-brand {
+        grid-template-columns: 42px 1fr 32px;
+        justify-content: stretch;
+    }
+
+    .sidebar-collapsed .sidebar-brand > div,
+    .sidebar-collapsed .sidebar-menu,
+    .sidebar-collapsed .logout-link {
+        display: flex;
+    }
+
+    .sidebar-collapsed .sidebar-menu {
+        display: block;
+    }
+
+    .sidebar-collapsed .sidebar-toggle {
+        bottom: auto;
+        position: static;
+        right: auto;
+        transform: none;
+    }
+
     .main-content {
         margin-left: 0;
         padding: 16px;
+        width: 100%;
+    }
+
+    .sidebar-collapsed .main-content {
+        margin-left: 0;
         width: 100%;
     }
 
