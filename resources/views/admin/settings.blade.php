@@ -1,23 +1,24 @@
 @extends('layouts.app')
 
-@section('title', 'Pengaturan - Sikasir-4SR')
+@section('title', 'Pengaturan Profil Toko - Sikasir-4SR')
 @section('body_class', 'admin-body')
 
 @section('content')
 @include('partials.sidebar', ['active' => 'pengaturan'])
 
 <main class="main-content">
-    @include('partials.topbar', ['title' => 'Pengaturan Toko', 'subtitle' => 'Konfigurasi sistem dan preferensi toko', 'role' => 'Kasir'])
+    @include('partials.topbar', ['title' => 'Pengaturan Toko', 'subtitle' => 'Konfigurasi profil toko', 'role' => 'Kasir'])
 
     <section class="admin-panel settings-panel">
         <div class="settings-tabs">
-            <button class="active" type="button">Profil Toko</button>
+            <a class="active" href="{{ route('admin.settings') }}">Profil Toko</a>
+            <a href="{{ route('admin.settings.about') }}">Tentang Kami</a>
             <button type="button">Struk & Pajak</button>
             <button type="button">Pengguna</button>
             <button type="button">Data</button>
         </div>
 
-        <div class="settings-card">
+        <div class="settings-card" id="profil-toko">
             <h2>Informasi Toko</h2>
 
             <label>Nama toko <b>*</b></label>

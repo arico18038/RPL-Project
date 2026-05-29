@@ -11,34 +11,40 @@
 
     <section class="admin-panel report-panel">
         <div class="panel-actions spread">
-            <button class="outline-button" type="button">Filter periode</button>
-            <button class="outline-button" type="button">Cetak Laporan</button>
+            <button class="outline-button" type="button">
+                <img src="{{ asset('images/icon/Kalender.png') }}" alt="" class="button-icon">
+                Filter periode
+            </button>
+            <button class="outline-button" type="button">
+                <img src="{{ asset('images/icon/Laporan.png') }}" alt="" class="button-icon">
+                Cetak Laporan
+            </button>
         </div>
 
         <div class="metric-grid report-metrics">
             <div class="metric-card purple">
-                <span>K</span>
+                <span><img src="{{ asset('images/icon/Icon Riwayat.png') }}" alt="" class="metric-icon"></span>
                 <div>
                     <p>Total transaksi</p>
                     <strong>{{ $orders->count() }}</strong>
                 </div>
             </div>
             <div class="metric-card blue">
-                <span>P</span>
+                <span><img src="{{ asset('images/icon/Uang.png') }}" alt="" class="metric-icon"></span>
                 <div>
                     <p>Total pendapatan</p>
                     <strong>Rp {{ number_format($totalSales, 0, ',', '.') }}</strong>
                 </div>
             </div>
             <div class="metric-card red">
-                <span>E</span>
+                <span><img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="metric-icon"></span>
                 <div>
                     <p>Total pengeluaran</p>
                     <strong>Rp {{ number_format($totalExpense, 0, ',', '.') }}</strong>
                 </div>
             </div>
             <div class="metric-card green">
-                <span>L</span>
+                <span><img src="{{ asset('images/icon/Laba.png') }}" alt="" class="metric-icon"></span>
                 <div>
                     <p>Laba kotor</p>
                     <strong>Rp {{ number_format($grossProfit, 0, ',', '.') }}</strong>

@@ -19,8 +19,22 @@
         @endif
 
         <div class="panel-actions">
-            <button class="outline-button" type="button">Ekspor Excel</button>
-            <button class="primary-button" type="button" id="open-menu-modal">+ Tambah Barang</button>
+            <a class="outline-button" href="{{ route('admin.inventory.export') }}">
+                <img src="{{ asset('images/icon/Laporan.png') }}" alt="" class="button-icon">
+                Ekspor Excel
+            </a>
+            <button class="primary-button" type="button" id="open-menu-modal">
+                <img src="{{ asset('images/icon/Tambah (1).png') }}" alt="" class="button-icon invert-icon">
+                Tambah Barang
+            </button>
+            <button class="primary-button" type="button" id="open-table-modal">
+                <img src="{{ asset('images/icon/Tambah (1).png') }}" alt="" class="button-icon invert-icon">
+                Tambah Meja
+            </button>
+            <button class="outline-button danger-outline-button" type="button" id="open-delete-table-modal">
+                <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
+                Hapus Meja
+            </button>
         </div>
 
         @if ($lowStockCount > 0)
@@ -36,7 +50,7 @@
             </select>
 
             <div class="search-box table-search">
-                <span class="search-icon">Cari</span>
+                <img src="{{ asset('images/icon/Icon Pencarian.png') }}" alt="" class="search-icon-img">
                 <input type="text" placeholder="Cari nama atau kode barang...">
             </div>
         </div>
@@ -88,7 +102,10 @@
                                         data-description="{{ $menu->description }}"
                                         data-image-url="{{ $menu->image_url }}"
                                         data-is-available="{{ $menu->is_available ? '1' : '0' }}"
-                                    >Edit</button>
+                                    >
+                                        <img src="{{ asset('images/icon/Pencil.png') }}" alt="" class="button-icon">
+                                        Edit
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -152,7 +169,10 @@
                 </select>
 
                 <div class="modal-actions">
-                    <button class="danger-button" type="submit" form="delete-menu-form" id="delete-menu-button" hidden>Hapus Barang</button>
+                    <button class="danger-button" type="submit" form="delete-menu-form" id="delete-menu-button" hidden>
+                        <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon invert-icon">
+                        Hapus Barang
+                    </button>
                     <button class="outline-button" type="button" id="cancel-menu-modal">Batal</button>
                     <button class="primary-button" type="submit">Simpan</button>
                 </div>
@@ -161,6 +181,59 @@
             <form method="POST" action="#" id="delete-menu-form" hidden>
                 @csrf
                 @method('DELETE')
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="table-modal" hidden>
+        <div class="modal-card compact-modal">
+            <div class="modal-header">
+                <h2>Tambah Meja Baru</h2>
+                <button type="button" id="close-table-modal" aria-label="Tutup">x</button>
+            </div>
+
+            <form method="POST" action="{{ route('admin.tables.store') }}" class="menu-form">
+                @csrf
+                <p>Masukkan nomor meja yang akan dipakai pada pilihan meja kasir.</p>
+
+                <label for="table-number">Nomor meja *</label>
+                <input id="table-number" name="number" type="number" min="1" max="999" placeholder="Contoh: 12" value="{{ old('number') }}" required>
+
+                <div class="modal-actions">
+                    <button class="outline-button" type="button" id="cancel-table-modal">Batal</button>
+                    <button class="primary-button" type="submit">Simpan Meja</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="delete-table-modal" hidden>
+        <div class="modal-card compact-modal">
+            <div class="modal-header">
+                <h2>Hapus Meja</h2>
+                <button type="button" id="close-delete-table-modal" aria-label="Tutup">x</button>
+            </div>
+
+            <form method="POST" action="#" class="menu-form" id="delete-table-form">
+                @csrf
+                @method('DELETE')
+                <p>Pilih meja yang ingin dihapus. Meja yang sudah digunakan pada pesanan tidak dapat dihapus.</p>
+
+                <label for="delete-table-select">Nomor meja *</label>
+                <select id="delete-table-select" required>
+                    <option value="">Pilih meja</option>
+                    @foreach ($tables as $table)
+                        <option value="{{ route('admin.tables.destroy', $table) }}">Meja {{ $table->number }}</option>
+                    @endforeach
+                </select>
+
+                <div class="modal-actions">
+                    <button class="outline-button" type="button" id="cancel-delete-table-modal">Batal</button>
+                    <button class="danger-button" type="submit">
+                        <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon invert-icon">
+                        Hapus Meja
+                    </button>
+                </div>
             </form>
         </div>
     </div>

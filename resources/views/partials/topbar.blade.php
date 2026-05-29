@@ -6,7 +6,10 @@
 
     <div class="header-actions">
         <div class="time-card">
-            <span>Waktu</span>
+            <span>
+                <img src="{{ asset('images/icon/Kalender.png') }}" alt="" class="inline-icon">
+                Waktu
+            </span>
             <strong id="jam-sekarang">--:--:-- WIB</strong>
         </div>
 

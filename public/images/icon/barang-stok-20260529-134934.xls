@@ -1,0 +1,9 @@
+﻿sep=;
+"Kode barang";"Nama barang";Kategori;Satuan;"Harga beli";"Harga jual";Stok;"Min. stok";Status;Deskripsi
+BRG-006;"Ayam Bakar Madu";"Makanan Berat";Pcs;"Rp 9.900";"Rp 18.000";98;20;Aktif;"Ayam Bakar Madu sedap Euy"
+BRG-008;Burger;"Makanan Berat";Pcs;"Rp 8.250";"Rp 15.000";100;20;Aktif;"Sedap enak"
+BRG-002;"Mie Ayam Jamur";"Makanan Berat";Pcs;"Rp 9.900";"Rp 18.000";0;20;Nonaktif;"Mie kenyal dengan topping ayam bumbu jamur."
+BRG-001;"Nasi Goreng Spesial 4SR";"Makanan Berat";Pcs;"Rp 13.750";"Rp 25.000";98;20;Aktif;"Nasi goreng dengan telur, ayam, dan kerupuk."
+BRG-003;"Es Jeruk Peras";"Minuman Dingin";Botol;"Rp 5.500";"Rp 10.000";98;20;Aktif;"Dibuat dari jeruk asli pilihan."
+BRG-004;"Es Teh Manis";"Minuman Dingin";Botol;"Rp 2.750";"Rp 5.000";98;20;Aktif;"Teh melati dingin yang segar."
+BRG-005;"Kentang Goreng";Cemilan;Pcs;"Rp 8.250";"Rp 15.000";100;20;Aktif;"Sedang habis stok."

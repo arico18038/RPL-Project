@@ -52,7 +52,7 @@
 
             <div class="customer-filter">
                 <div class="search-box">
-                    <span class="search-icon">⌕</span>
+                    <img src="{{ asset('images/icon/Icon Pencarian.png') }}" alt="" class="search-icon-img">
                     <input type="text" id="search-menu" placeholder="Cari menu...">
                 </div>
 
@@ -98,7 +98,10 @@
                                                 <p>{{ $menu->description ?? 'Menu pilihan Rumah Makan 4SR' }}</p>
                                                 <div>
                                                     <strong>Rp {{ number_format($menu->price, 0, ',', '.') }}</strong>
-                                                    <button type="button" class="add-button" data-id="{{ $menu->id }}" data-name="{{ $menu->name }}" data-price="{{ $menu->price }}">Tambah</button>
+                                                <button type="button" class="add-button" data-id="{{ $menu->id }}" data-name="{{ $menu->name }}" data-price="{{ $menu->price }}">
+                                                    <img src="{{ asset('images/icon/Tambah (1).png') }}" alt="" class="add-icon">
+                                                    Tambah
+                                                </button>
                                                 </div>
                                             </div>
                                         </article>
@@ -149,7 +152,10 @@
 
             <div class="summary-actions">
                 <button class="pay-button" id="btn-bayar" type="submit" disabled>Kirim Pesanan</button>
-                <button class="clear-button" type="button" id="btn-clear-cart">Hapus pesanan</button>
+                <button class="clear-button" type="button" id="btn-clear-cart">
+                    <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
+                    Hapus pesanan
+                </button>
             </div>
         </aside>
     </form>

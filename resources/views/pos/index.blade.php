@@ -22,7 +22,7 @@
 
         <section class="product-area">
             <div class="search-box">
-                <span class="search-icon">⌕</span>
+                <img src="{{ asset('images/icon/Icon Pencarian.png') }}" alt="" class="search-icon-img">
                 <input type="text" id="search-menu" placeholder="Cari produk (F2)">
             </div>
 
@@ -68,7 +68,13 @@
                                     data-price="{{ $menu->price }}"
                                     data-stock="{{ $stock }}"
                                     @disabled($stock <= 0)
-                                >{{ $stock > 0 ? '+' : 'Habis' }}</button>
+                                >
+                                    @if ($stock > 0)
+                                        <img src="{{ asset('images/icon/Tambah (1).png') }}" alt="Tambah" class="add-icon">
+                                    @else
+                                        Habis
+                                    @endif
+                                </button>
                             </div>
                         </div>
                     </article>
@@ -95,7 +101,7 @@
             <div class="summary-section">
                 <h4>Item Dipilih</h4>
                 <div id="empty-cart-box" class="empty-cart-box">
-                    <span class="empty-icon">▱</span>
+                    <img src="{{ asset('images/icon/Icon Kranjang Belanja.png') }}" alt="" class="empty-icon-img">
                     <p>Keranjang masih kosong</p>
                 </div>
                 <ul id="daftar-pesanan" class="cart-list"></ul>
@@ -137,12 +143,18 @@
 
             <div class="payment-method">
                 <p>Metode Pembayaran Hanya Bisa:</p>
-                <button type="button">▣ Tunai</button>
+                <button type="button">
+                    <img src="{{ asset('images/icon/Uang.png') }}" alt="" class="button-icon">
+                    Tunai
+                </button>
             </div>
 
             <div class="summary-actions">
                 <button class="pay-button" id="btn-bayar" type="submit" disabled>Bayar (F9)</button>
-                <button class="clear-button" type="button" id="btn-clear-cart">▱ Hapus keranjang</button>
+                <button class="clear-button" type="button" id="btn-clear-cart">
+                    <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
+                    Hapus keranjang
+                </button>
             </div>
         </aside>
     </form>

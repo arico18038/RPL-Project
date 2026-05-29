@@ -81,7 +81,9 @@ function renderCart() {
             <div class="cart-meta">${formatRupiah(item.price)} x ${item.quantity} | Stok: ${item.stock}</div>
             <div class="cart-line-bottom">
                 <div class="cart-item-price">${formatRupiah(item.price * item.quantity)}</div>
-                <button type="button" class="btn-hapus" data-remove="${item.id}">▱</button>
+                <button type="button" class="btn-hapus" data-remove="${item.id}" aria-label="Hapus ${item.name}">
+                    <img src="/images/icon/Icon Hapus.png" alt="">
+                </button>
             </div>
         `;
         list.appendChild(row);
@@ -219,20 +221,40 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateClock, 1000);
 
     const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const sidebarToggleIcon = sidebarToggle?.querySelector('.sidebar-toggle-icon');
+    const syncSidebarToggleIcon = (isCollapsed) => {
+        if (!sidebarToggle || !sidebarToggleIcon) {
+            return;
+        }
+
+        sidebarToggle.setAttribute('aria-label', isCollapsed ? 'Tampilkan sidebar' : 'Ciutkan sidebar');
+        sidebarToggleIcon.src = isCollapsed ? sidebarToggle.dataset.showIcon : sidebarToggle.dataset.hideIcon;
+    };
+
     if (localStorage.getItem('sidebar-collapsed') === 'true') {
         document.body.classList.add('sidebar-collapsed');
-        if (sidebarToggle) {
-            sidebarToggle.setAttribute('aria-label', 'Tampilkan sidebar');
-            sidebarToggle.textContent = '>';
-        }
+        syncSidebarToggleIcon(true);
+    } else {
+        syncSidebarToggleIcon(false);
     }
 
     sidebarToggle?.addEventListener('click', () => {
         const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
         localStorage.setItem('sidebar-collapsed', String(isCollapsed));
-        sidebarToggle.setAttribute('aria-label', isCollapsed ? 'Tampilkan sidebar' : 'Ciutkan sidebar');
-        sidebarToggle.textContent = isCollapsed ? '>' : '<';
+        syncSidebarToggleIcon(isCollapsed);
     });
+
+    const recapType = document.getElementById('recap-type');
+    const monthlyInput = document.querySelector('[data-period-input="monthly"]');
+    const yearlyInput = document.querySelector('[data-period-input="yearly"]');
+    const syncPeriodInputs = () => {
+        const isYearly = recapType?.value === 'yearly';
+        if (monthlyInput) monthlyInput.hidden = isYearly;
+        if (yearlyInput) yearlyInput.hidden = !isYearly;
+    };
+
+    syncPeriodInputs();
+    recapType?.addEventListener('change', syncPeriodInputs);
 
     document.querySelectorAll('.add-button').forEach((button) => {
         button.addEventListener('click', () => addItem(button));
@@ -288,6 +310,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuModalDescription = document.getElementById('menu-modal-description');
     const deleteMenuForm = document.getElementById('delete-menu-form');
     const deleteMenuButton = document.getElementById('delete-menu-button');
+    const tableModal = document.getElementById('table-modal');
+    const openTableModal = document.getElementById('open-table-modal');
+    const closeTableModal = document.getElementById('close-table-modal');
+    const cancelTableModal = document.getElementById('cancel-table-modal');
+    const deleteTableModal = document.getElementById('delete-table-modal');
+    const openDeleteTableModal = document.getElementById('open-delete-table-modal');
+    const closeDeleteTableModal = document.getElementById('close-delete-table-modal');
+    const cancelDeleteTableModal = document.getElementById('cancel-delete-table-modal');
+    const deleteTableForm = document.getElementById('delete-table-form');
+    const deleteTableSelect = document.getElementById('delete-table-select');
 
     const setMenuModalMode = (mode, data = {}) => {
         if (!menuModal || !menuForm || !menuFormMethod) {
@@ -351,6 +383,61 @@ document.addEventListener('DOMContentLoaded', () => {
     menuModal?.addEventListener('click', (event) => {
         if (event.target === menuModal) {
             menuModal.hidden = true;
+        }
+    });
+
+    openTableModal?.addEventListener('click', () => {
+        if (tableModal) {
+            tableModal.hidden = false;
+            document.getElementById('table-number')?.focus();
+        }
+    });
+
+    closeTableModal?.addEventListener('click', () => {
+        if (tableModal) tableModal.hidden = true;
+    });
+
+    cancelTableModal?.addEventListener('click', () => {
+        if (tableModal) tableModal.hidden = true;
+    });
+
+    tableModal?.addEventListener('click', (event) => {
+        if (event.target === tableModal) {
+            tableModal.hidden = true;
+        }
+    });
+
+    openDeleteTableModal?.addEventListener('click', () => {
+        if (deleteTableModal) {
+            deleteTableModal.hidden = false;
+            deleteTableSelect?.focus();
+        }
+    });
+
+    closeDeleteTableModal?.addEventListener('click', () => {
+        if (deleteTableModal) deleteTableModal.hidden = true;
+    });
+
+    cancelDeleteTableModal?.addEventListener('click', () => {
+        if (deleteTableModal) deleteTableModal.hidden = true;
+    });
+
+    deleteTableModal?.addEventListener('click', (event) => {
+        if (event.target === deleteTableModal) {
+            deleteTableModal.hidden = true;
+        }
+    });
+
+    deleteTableForm?.addEventListener('submit', (event) => {
+        if (!deleteTableSelect?.value) {
+            event.preventDefault();
+            alert('Pilih meja yang ingin dihapus.');
+            return;
+        }
+
+        deleteTableForm.action = deleteTableSelect.value;
+        if (!confirm('Hapus meja ini dari daftar meja?')) {
+            event.preventDefault();
         }
     });
 

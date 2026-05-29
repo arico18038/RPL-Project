@@ -48,13 +48,19 @@
                                     <form method="POST" action="{{ route('admin.orders.process', $order) }}">
                                         @csrf
                                         @method('PATCH')
-                                        <button class="btn-konfirmasi" type="submit">Proses</button>
+                                        <button class="btn-konfirmasi" type="submit">
+                                            <img src="{{ asset('images/icon/Aksi.png') }}" alt="" class="button-icon invert-icon">
+                                            Proses
+                                        </button>
                                     </form>
                                 @elseif ($order->status === 'processing')
                                     <form method="POST" action="{{ route('admin.orders.complete', $order) }}">
                                         @csrf
                                         @method('PATCH')
-                                        <button class="btn-konfirmasi" type="submit">Selesai</button>
+                                        <button class="btn-konfirmasi" type="submit">
+                                            <img src="{{ asset('images/icon/Icon Slest.png') }}" alt="" class="button-icon invert-icon">
+                                            Selesai
+                                        </button>
                                     </form>
                                 @else
                                     <span class="muted-text">Selesai</span>
