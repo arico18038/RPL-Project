@@ -1,7 +1,13 @@
+@php
+    $customerMode = $customerMode ?? false;
+    $storeProfile = \App\Models\SiteSetting::profileContent();
+    $storeLogo = $storeProfile['store_logo'] ?? 'assets/logo-4sr.png';
+@endphp
+
 <aside class="sidebar">
     <div>
         <div class="sidebar-brand">
-            <img src="{{ asset('assets/logo-4sr.png') }}" alt="Logo 4SR" class="brand-logo-img">
+            <img src="{{ asset($storeLogo) }}" alt="Logo 4SR" class="brand-logo-img">
             <div>
                 <h3>Sikasir-4SR</h3>
                 <p>Sistem kasir-4SR</p>
@@ -19,21 +25,21 @@
 
         <ul class="sidebar-menu">
             <li>
-                <a href="{{ route('pos.index') }}" @class(['active' => ($active ?? '') === 'kasir'])>
+                <a href="{{ $customerMode ? '#' : route('pos.index') }}" @class(['active' => ($active ?? '') === 'kasir'])>
                     <img src="{{ asset('images/icon/Icon Kranjang Belanja.png') }}" alt="" class="nav-icon">
                     <span class="nav-label">Menu</span>
                 </a>
             </li>
-            @guest
+            @if ($customerMode || auth()->guest())
                 <li>
                     <a href="{{ route('about') }}" @class(['active' => ($active ?? '') === 'tentang'])>
                         <img src="{{ asset('images/icon/Icon Slest.png') }}" alt="" class="nav-icon">
                         <span class="nav-label">Tentang Kami</span>
                     </a>
                 </li>
-            @endguest
+            @endif
 
-            @auth
+            @if (! $customerMode && auth()->check())
                 <li>
                     <a href="{{ route('admin.index') }}" @class(['active' => ($active ?? '') === 'barang'])>
                         <img src="{{ asset('images/icon/Icon Barang dan Stok.png') }}" alt="" class="nav-icon">
@@ -64,11 +70,11 @@
                         <span class="nav-label">Pengaturan</span>
                     </a>
                 </li>
-            @endauth
+            @endif
         </ul>
     </div>
 
-    @auth
+    @if (! $customerMode && auth()->check())
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" class="logout-link">
@@ -76,5 +82,5 @@
                 <span class="nav-label">Keluar</span>
             </button>
         </form>
-    @endauth
+    @endif
 </aside>

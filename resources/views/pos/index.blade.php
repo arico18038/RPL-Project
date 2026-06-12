@@ -4,10 +4,19 @@
 @section('body_class', 'pos-body')
 
 @section('content')
-@include('partials.sidebar', ['active' => 'kasir'])
+@php
+    $customerMode = isset($selectedTable) && $selectedTable;
+@endphp
+
+@include('partials.sidebar', ['active' => 'kasir', 'customerMode' => $customerMode])
 
 <main class="main-content" id="kasir">
-    @include('partials.topbar', ['title' => 'Menu', 'subtitle' => 'Rumah Makan 4SR', 'role' => auth()->check() ? 'Admin' : 'Pengunjung'])
+    @include('partials.topbar', [
+        'title' => $customerMode ? 'Menu Meja ' . $selectedTable->number : 'Menu',
+        'subtitle' => 'Rumah Makan 4SR',
+        'role' => $customerMode ? 'Pengunjung' : (auth()->check() ? 'Admin' : 'Pengunjung'),
+        'forceGuest' => $customerMode,
+    ])
 
     @if (session('success'))
         <div class="toast-message is-visible">Produk berhasil ditambahkan</div>
@@ -38,7 +47,9 @@
                     @php
                         $stock = $menu->stock;
                         $code = 'BRG-' . str_pad((string) $menu->id, 3, '0', STR_PAD_LEFT);
-                        $image = $menu->image_url && str_starts_with($menu->image_url, 'http') ? $menu->image_url : null;
+                        $image = $menu->image_url
+                            ? (str_starts_with($menu->image_url, 'http') ? $menu->image_url : asset($menu->image_url))
+                            : null;
                     @endphp
                     <article class="product-card" data-name="{{ strtolower($menu->name) }}" data-category="{{ $menu->category_id }}">
                         <div class="product-image">
@@ -90,10 +101,19 @@
 
             <div class="summary-section">
                 <label class="table-label" for="table-id">Nomor meja</label>
-                <select class="table-input" name="table_id" id="table-id" required>
+                @if ($customerMode)
+                    <input type="hidden" name="table_id" value="{{ $selectedTable->id }}">
+                @endif
+                <select
+                    class="table-input"
+                    name="{{ $customerMode ? '' : 'table_id' }}"
+                    id="table-id"
+                    required
+                    @disabled($customerMode)
+                >
                     <option value="">Pilih meja</option>
                     @foreach ($tables as $table)
-                        <option value="{{ $table->id }}">Meja {{ $table->number }}</option>
+                        <option value="{{ $table->id }}" @selected($customerMode && $selectedTable?->id === $table->id)>Meja {{ $table->number }}</option>
                     @endforeach
                 </select>
             </div>
@@ -113,28 +133,35 @@
                 <strong id="subtotal-harga">Rp 0</strong>
             </div>
 
-            @auth
-                <div class="discount-box">
-                    <label>Diskon (F7)</label>
-                    <div>
-                        <select id="tipe-diskon">
-                            <option value="persen">%</option>
-                            <option value="rupiah">Rp</option>
-                        </select>
-                        <input type="number" id="nilai-diskon" value="0" min="0">
-                    </div>
+            @php
+                $discountEnabled = ($salesSettings['discount_enabled'] ?? '0') === '1' && (float) ($salesSettings['discount_value'] ?? 0) > 0;
+                $discountType = $salesSettings['discount_type'] ?? 'persen';
+                $discountValue = (float) ($salesSettings['discount_value'] ?? 0);
+                $taxRate = (float) ($salesSettings['tax_rate'] ?? 11);
+            @endphp
+
+            @if ($discountEnabled)
+                <div class="summary-row discount-summary-row">
+                    <span>Diskon {{ $discountType === 'persen' ? rtrim(rtrim(number_format($discountValue, 2, ',', '.'), '0'), ',') . '%' : 'Rp ' . number_format($discountValue, 0, ',', '.') }}</span>
+                    <strong id="diskon-harga">- Rp 0</strong>
                 </div>
+                <input type="hidden" id="tipe-diskon" value="{{ $discountType }}">
+                <input type="hidden" id="nilai-diskon" value="{{ $discountValue }}">
             @else
                 <input type="hidden" id="tipe-diskon" value="persen">
                 <input type="hidden" id="nilai-diskon" value="0">
-            @endauth
+            @endif
 
+            <input type="hidden" id="tax-rate" value="{{ $taxRate }}">
             <div class="summary-row">
-                <span>PPN 11%</span>
+                <span>PPN {{ rtrim(rtrim(number_format($taxRate, 2, ',', '.'), '0'), ',') }}%</span>
                 <strong id="ppn-harga">Rp 0</strong>
             </div>
 
-            <input type="hidden" name="note" value="Pesanan dari Kasir Web">
+            @if ($customerMode)
+                <input type="hidden" name="source" value="customer">
+            @endif
+            <input type="hidden" name="note" value="{{ $customerMode ? 'Pesanan pelanggan dari QR meja ' . $selectedTable->number : 'Pesanan dari Kasir Web' }}">
 
             <div class="total-box">
                 <span>Total pembayaran</span>

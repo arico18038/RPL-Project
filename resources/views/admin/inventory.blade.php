@@ -23,6 +23,10 @@
                 <img src="{{ asset('images/icon/Laporan.png') }}" alt="" class="button-icon">
                 Ekspor Excel
             </a>
+            <button class="outline-button" type="button" id="open-category-modal">
+                <img src="{{ asset('images/icon/Tambah (1).png') }}" alt="" class="button-icon">
+                Tambah Kategori
+            </button>
             <button class="primary-button" type="button" id="open-menu-modal">
                 <img src="{{ asset('images/icon/Tambah (1).png') }}" alt="" class="button-icon invert-icon">
                 Tambah Barang
@@ -42,12 +46,14 @@
         @endif
 
         <div class="table-filters">
-            <select>
-                <option>Semua kategori</option>
+            <form method="GET" action="{{ route('admin.index') }}" class="category-filter-form">
+            <select name="category_id" onchange="this.form.submit()">
+                <option value="all" @selected($selectedCategory === 'all')>Semua kategori</option>
                 @foreach ($categories as $category)
-                    <option>{{ $category->name }}</option>
+                    <option value="{{ $category->id }}" @selected((string) $selectedCategory === (string) $category->id)>{{ $category->name }}</option>
                 @endforeach
             </select>
+            </form>
 
             <div class="search-box table-search">
                 <img src="{{ asset('images/icon/Icon Pencarian.png') }}" alt="" class="search-icon-img">
@@ -82,7 +88,7 @@
                             <td>BRG-{{ str_pad((string) $menu->id, 3, '0', STR_PAD_LEFT) }}</td>
                             <td>{{ $menu->name }}</td>
                             <td>{{ $menu->category?->name ?? '-' }}</td>
-                            <td>{{ str_contains(strtolower($menu->category?->name ?? ''), 'minuman') ? 'Botol' : 'Pcs' }}</td>
+                            <td>{{ $menu->unit ?? (str_contains(strtolower($menu->category?->name ?? ''), 'minuman') ? 'Botol' : 'Pcs') }}</td>
                             <td>Rp {{ number_format($buyPrice, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($sellPrice, 0, ',', '.') }}</td>
                             <td @class(['danger-text' => $stock < 20])>{{ $stock }}</td>
@@ -99,6 +105,7 @@
                                         data-category-id="{{ $menu->category_id }}"
                                         data-price="{{ (float) $menu->price }}"
                                         data-stock="{{ $stock }}"
+                                        data-unit="{{ $menu->unit ?? 'Pcs' }}"
                                         data-description="{{ $menu->description }}"
                                         data-image-url="{{ $menu->image_url }}"
                                         data-is-available="{{ $menu->is_available ? '1' : '0' }}"
@@ -118,7 +125,11 @@
             </table>
         </div>
 
-        <p class="table-caption">Menampilkan 1 - {{ $menus->count() }} dari {{ $menus->count() }} data</p>
+        @include('partials.pagination', ['items' => $menus])
+
+        <p class="table-caption">
+            Menampilkan {{ $menus->firstItem() ?? 0 }} - {{ $menus->lastItem() ?? 0 }} dari {{ $menus->total() }} data
+        </p>
     </section>
 
     <div class="modal-backdrop" id="menu-modal" hidden>
@@ -128,7 +139,7 @@
                 <button type="button" id="close-menu-modal" aria-label="Tutup">x</button>
             </div>
 
-            <form method="POST" action="{{ route('admin.menu.store') }}" class="menu-form" id="menu-form" data-store-url="{{ route('admin.menu.store') }}">
+            <form method="POST" action="{{ route('admin.menu.store') }}" enctype="multipart/form-data" class="menu-form" id="menu-form" data-store-url="{{ route('admin.menu.store') }}">
                 @csrf
                 <input type="hidden" name="_method" value="POST" id="menu-form-method">
                 <p id="menu-modal-description">Masukkan detail barang baru.</p>
@@ -154,6 +165,14 @@
                         <label for="stock">Stok *</label>
                         <input id="stock" name="stock" type="number" min="0" step="1" placeholder="Contoh: 50" value="{{ old('stock', 100) }}" required>
                     </div>
+                    <div>
+                        <label for="unit">Satuan *</label>
+                        <select id="unit" name="unit" required>
+                            @foreach (['Pcs', 'Porsi', 'Botol', 'Gelas', 'Cup', 'Pack'] as $unit)
+                                <option value="{{ $unit }}" @selected(old('unit', 'Pcs') === $unit)>{{ $unit }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 <label for="description">Deskripsi (opsional)</label>
@@ -161,6 +180,9 @@
 
                 <label for="image_url">URL gambar produk (opsional)</label>
                 <input id="image_url" name="image_url" type="url" placeholder="https://..." value="{{ old('image_url') }}">
+
+                <label for="image_file">Upload gambar dari lokal (opsional)</label>
+                <input id="image_file" name="image_file" type="file" accept="image/*">
 
                 <label for="is_available">Status aktif *</label>
                 <select id="is_available" name="is_available" required>
@@ -181,6 +203,31 @@
             <form method="POST" action="#" id="delete-menu-form" hidden>
                 @csrf
                 @method('DELETE')
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="category-modal" hidden>
+        <div class="modal-card compact-modal">
+            <div class="modal-header">
+                <h2>Tambah Kategori</h2>
+                <button type="button" id="close-category-modal" aria-label="Tutup">x</button>
+            </div>
+
+            <form method="POST" action="{{ route('admin.categories.store') }}" class="menu-form">
+                @csrf
+                <p>Tambahkan kategori baru untuk pengelompokan menu.</p>
+
+                <label for="category-name">Nama kategori *</label>
+                <input id="category-name" name="name" type="text" placeholder="Contoh: Makanan Berat" required>
+
+                <label for="category-description">Deskripsi (opsional)</label>
+                <textarea id="category-description" name="description" placeholder="Deskripsi singkat kategori"></textarea>
+
+                <div class="modal-actions">
+                    <button class="outline-button" type="button" id="cancel-category-modal">Batal</button>
+                    <button class="primary-button" type="submit">Simpan Kategori</button>
+                </div>
             </form>
         </div>
     </div>

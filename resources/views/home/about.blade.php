@@ -7,9 +7,41 @@
 @include('partials.sidebar', ['active' => 'tentang'])
 
 <main class="main-content">
-    @include('partials.topbar', ['title' => 'Tentang Kami', 'subtitle' => 'Rumah Makan 4SR', 'role' => auth()->check() ? 'Admin' : 'Pengunjung'])
+    @include('partials.topbar', ['title' => 'Tentang Kami', 'subtitle' => $profile['store_name'] ?? 'Rumah Makan 4SR', 'role' => auth()->check() ? 'Admin' : 'Pengunjung'])
 
     <section class="about-panel">
+        <div class="store-profile-public">
+            <div class="store-profile-logo">
+                <img src="{{ asset($profile['store_logo'] ?? 'assets/logo-4sr.png') }}" alt="Logo {{ $profile['store_name'] ?? 'Rumah Makan 4SR' }}">
+            </div>
+            <div>
+                <p class="public-kicker">Profil Toko</p>
+                <h1>{{ $profile['store_name'] ?? 'Rumah Makan 4SR' }}</h1>
+                @if (!empty($profile['store_address']))
+                    <p>{{ $profile['store_address'] }}</p>
+                @else
+                    <p>Profil toko dapat diperbarui melalui dashboard admin pada menu Pengaturan.</p>
+                @endif
+
+                <div class="store-profile-grid">
+                    <article>
+                        <span>Telepon</span>
+                        <strong>{{ $profile['store_phone'] ?: '-' }}</strong>
+                    </article>
+                    <article>
+                        <span>WhatsApp</span>
+                        <strong>{{ $profile['store_whatsapp'] ?: '-' }}</strong>
+                    </article>
+                    <article>
+                        <span>NPWP</span>
+                        <strong>{{ $profile['store_npwp'] ?: '-' }}</strong>
+                    </article>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-divider"></div>
+
         <p class="public-kicker">{{ $about['about_kicker'] }}</p>
         <h1>{{ $about['about_title'] }}</h1>
         <p>{{ $about['about_description'] }}</p>

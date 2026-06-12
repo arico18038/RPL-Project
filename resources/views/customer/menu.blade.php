@@ -82,7 +82,9 @@
                                 <div class="book-menu-list">
                                     @foreach ($categoryMenus as $menu)
                                         @php
-                                            $image = $menu->image_url && str_starts_with($menu->image_url, 'http') ? $menu->image_url : null;
+                                            $image = $menu->image_url
+                                                ? (str_starts_with($menu->image_url, 'http') ? $menu->image_url : asset($menu->image_url))
+                                                : null;
                                         @endphp
                                         <article class="book-menu-item product-card" data-name="{{ strtolower($menu->name) }}" data-category="{{ $menu->category_id }}">
                                             <div class="book-menu-image">
@@ -98,7 +100,7 @@
                                                 <p>{{ $menu->description ?? 'Menu pilihan Rumah Makan 4SR' }}</p>
                                                 <div>
                                                     <strong>Rp {{ number_format($menu->price, 0, ',', '.') }}</strong>
-                                                <button type="button" class="add-button" data-id="{{ $menu->id }}" data-name="{{ $menu->name }}" data-price="{{ $menu->price }}">
+                                                <button type="button" class="add-button" data-id="{{ $menu->id }}" data-name="{{ $menu->name }}" data-price="{{ $menu->price }}" data-stock="{{ $menu->stock }}">
                                                     <img src="{{ asset('images/icon/Tambah (1).png') }}" alt="" class="add-icon">
                                                     Tambah
                                                 </button>
@@ -137,11 +139,28 @@
                 <strong id="subtotal-harga">Rp 0</strong>
             </div>
 
-            <input type="hidden" id="tipe-diskon" value="rupiah">
-            <input type="hidden" id="nilai-diskon" value="0">
+            @php
+                $discountEnabled = ($salesSettings['discount_enabled'] ?? '0') === '1' && (float) ($salesSettings['discount_value'] ?? 0) > 0;
+                $discountType = $salesSettings['discount_type'] ?? 'persen';
+                $discountValue = (float) ($salesSettings['discount_value'] ?? 0);
+                $taxRate = (float) ($salesSettings['tax_rate'] ?? 11);
+            @endphp
 
+            @if ($discountEnabled)
+                <div class="summary-row discount-summary-row">
+                    <span>Diskon {{ $discountType === 'persen' ? rtrim(rtrim(number_format($discountValue, 2, ',', '.'), '0'), ',') . '%' : 'Rp ' . number_format($discountValue, 0, ',', '.') }}</span>
+                    <strong id="diskon-harga">- Rp 0</strong>
+                </div>
+                <input type="hidden" id="tipe-diskon" value="{{ $discountType }}">
+                <input type="hidden" id="nilai-diskon" value="{{ $discountValue }}">
+            @else
+                <input type="hidden" id="tipe-diskon" value="rupiah">
+                <input type="hidden" id="nilai-diskon" value="0">
+            @endif
+
+            <input type="hidden" id="tax-rate" value="{{ $taxRate }}">
             <div class="summary-row">
-                <span>PPN 11%</span>
+                <span>PPN {{ rtrim(rtrim(number_format($taxRate, 2, ',', '.'), '0'), ',') }}%</span>
                 <strong id="ppn-harga">Rp 0</strong>
             </div>
 

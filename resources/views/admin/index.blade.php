@@ -13,7 +13,7 @@
         <div class="toast-message is-visible">{{ session('success') }}</div>
     @endif
 
-    <section class="admin-panel">
+    <section class="admin-panel orders-panel">
         <div class="panel-header">
             <div>
                 <h2>Konfirmasi Pesanan & Pembayaran</h2>
@@ -21,12 +21,27 @@
             </div>
         </div>
 
+        <div class="order-summary-grid">
+            <div class="order-summary-card">
+                <span>Total Pesanan</span>
+                <strong>{{ $totalToday }}</strong>
+            </div>
+            <div class="order-summary-card">
+                <span>Menunggu</span>
+                <strong>{{ $pendingToday }}</strong>
+            </div>
+            <div class="order-summary-card">
+                <span>Diproses</span>
+                <strong>{{ $processingToday }}</strong>
+            </div>
+        </div>
+
         <div class="table-wrapper">
-            <table class="admin-table">
+            <table class="admin-table orders-table">
                 <thead>
                     <tr>
                         <th>Meja</th>
-                        <th>Pesanan</th>
+                        <th>Detail Pesanan</th>
                         <th>Total</th>
                         <th>Status</th>
                         <th>Aksi</th>
@@ -35,14 +50,24 @@
                 <tbody>
                     @forelse ($orders as $order)
                         <tr>
-                            <td>{{ $order->table ? 'Meja ' . $order->table->number : '-' }}</td>
                             <td>
-                                @foreach ($order->order_items as $item)
-                                    <div>{{ $item->menu_item?->name ?? 'Menu terhapus' }} x{{ $item->quantity }}</div>
-                                @endforeach
+                                <strong>{{ $order->table ? 'Meja ' . $order->table->number : '-' }}</strong>
+                                <span class="order-code">ORD-{{ str_pad((string) $order->id, 3, '0', STR_PAD_LEFT) }}</span>
                             </td>
-                            <td>Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
-                            <td><span class="badge {{ $order->status }}">{{ $order->status === 'completed' ? 'Selesai' : ($order->status === 'processing' ? 'Proses' : ucfirst($order->status)) }}</span></td>
+                            <td>
+                                <div class="order-items-list">
+                                    @foreach ($order->order_items as $item)
+                                        <span>{{ $item->menu_item?->name ?? 'Menu terhapus' }} <b>x{{ $item->quantity }}</b></span>
+                                    @endforeach
+                                </div>
+                            </td>
+                            <td>
+                                <strong class="order-total">Rp {{ number_format($order->total_price, 0, ',', '.') }}</strong>
+                                <span class="order-time">{{ $order->created_at?->format('d/m/Y H:i') }}</span>
+                            </td>
+                            <td>
+                                <span class="badge {{ $order->status }}">{{ $order->status === 'completed' ? 'Selesai' : ($order->status === 'processing' ? 'Proses' : ucfirst($order->status)) }}</span>
+                            </td>
                             <td>
                                 @if ($order->status === 'pending')
                                     <form method="POST" action="{{ route('admin.orders.process', $order) }}">
@@ -75,6 +100,12 @@
                 </tbody>
             </table>
         </div>
+
+        @include('partials.pagination', ['items' => $orders])
+
+        <p class="table-caption">
+            Menampilkan {{ $orders->firstItem() ?? 0 }} - {{ $orders->lastItem() ?? 0 }} dari {{ $orders->total() }} pesanan
+        </p>
     </section>
 </main>
 @endsection

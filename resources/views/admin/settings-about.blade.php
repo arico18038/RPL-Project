@@ -21,9 +21,8 @@
         <div class="settings-tabs">
             <a href="{{ route('admin.settings') }}">Profil Toko</a>
             <a class="active" href="{{ route('admin.settings.about') }}">Tentang Kami</a>
-            <button type="button">Struk & Pajak</button>
-            <button type="button">Pengguna</button>
-            <button type="button">Data</button>
+            <a href="{{ route('admin.settings.receipt') }}">Diskon & Pajak</a>
+            <a href="{{ route('admin.settings.data') }}">Data</a>
         </div>
 
         <form method="POST" action="{{ route('admin.settings.about.update') }}" class="settings-card about-settings-card">

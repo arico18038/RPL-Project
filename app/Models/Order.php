@@ -9,11 +9,20 @@ class Order extends Model
     protected $fillable = [
         'table_id',
         'status',
+        'subtotal',
+        'discount_type',
+        'discount_value',
+        'discount_amount',
+        'tax',
         'total_price',
         'note',
     ];
 
     protected $casts = [
+        'subtotal' => 'integer',
+        'discount_value' => 'integer',
+        'discount_amount' => 'integer',
+        'tax' => 'integer',
         'total_price' => 'decimal:2',
     ];
 

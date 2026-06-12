@@ -1,4 +1,8 @@
 <header class="top-header">
+    @php
+        $forceGuest = $forceGuest ?? false;
+    @endphp
+
     <div>
         <h1>{{ $title }}</h1>
         <p>{{ $subtitle }}</p>
@@ -13,7 +17,7 @@
             <strong id="jam-sekarang">--:--:-- WIB</strong>
         </div>
 
-        @guest
+        @if ($forceGuest || auth()->guest())
             <a href="{{ route('login') }}" class="user-card profile-login-link" title="Login Admin">
                 <div class="avatar">PG</div>
                 <div>
@@ -29,6 +33,6 @@
                     <p>{{ $role ?? 'Admin' }}</p>
                 </div>
             </div>
-        @endguest
+        @endif
     </div>
 </header>

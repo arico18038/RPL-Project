@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MenuItem;
 use App\Models\Order;
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -56,13 +57,27 @@ class OrderController extends Controller
                 ];
             });
 
-            $subtotal = $items->sum('subtotal');
-            $tax = (int) round($subtotal * 0.11);
-            $total = $subtotal + $tax;
+            $subtotal = (int) $items->sum('subtotal');
+            $salesSettings = SiteSetting::salesSettings();
+            $discountEnabled = ($salesSettings['discount_enabled'] ?? '0') === '1';
+            $discountType = $salesSettings['discount_type'] ?? 'persen';
+            $discountValue = $discountEnabled ? (float) ($salesSettings['discount_value'] ?? 0) : 0;
+            $discountAmount = $discountType === 'persen'
+                ? (int) round($subtotal * min($discountValue, 100) / 100)
+                : (int) min($discountValue, $subtotal);
+            $taxRate = (float) ($salesSettings['tax_rate'] ?? 11);
+            $taxable = max($subtotal - $discountAmount, 0);
+            $tax = (int) round($taxable * $taxRate / 100);
+            $total = $taxable + $tax;
 
             $order = Order::create([
                 'table_id' => $validated['table_id'],
                 'status' => 'pending',
+                'subtotal' => $subtotal,
+                'discount_type' => $discountType,
+                'discount_value' => (int) $discountValue,
+                'discount_amount' => $discountAmount,
+                'tax' => $tax,
                 'total_price' => $total,
                 'note' => $validated['note'] ?? null,
             ]);

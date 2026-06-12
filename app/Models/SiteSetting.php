@@ -28,13 +28,39 @@ class SiteSetting extends Model
 
     public static function aboutContent(): array
     {
-        $defaults = self::aboutDefaults();
-        $settings = self::whereIn('key', array_keys($defaults))
-            ->pluck('value', 'key')
-            ->filter(fn ($value) => $value !== null && $value !== '')
-            ->all();
+        return self::valuesWithDefaults(self::aboutDefaults());
+    }
 
-        return array_replace($defaults, $settings);
+    public static function profileDefaults(): array
+    {
+        return [
+            'store_name' => 'Rumah Makan 4SR',
+            'store_address' => '',
+            'store_phone' => '',
+            'store_whatsapp' => '',
+            'store_npwp' => '',
+            'store_logo' => 'assets/logo-4sr.png',
+        ];
+    }
+
+    public static function profileContent(): array
+    {
+        return self::valuesWithDefaults(self::profileDefaults());
+    }
+
+    public static function salesDefaults(): array
+    {
+        return [
+            'tax_rate' => '11',
+            'discount_enabled' => '0',
+            'discount_type' => 'persen',
+            'discount_value' => '0',
+        ];
+    }
+
+    public static function salesSettings(): array
+    {
+        return self::valuesWithDefaults(self::salesDefaults());
     }
 
     public static function saveMany(array $values): void
@@ -42,5 +68,15 @@ class SiteSetting extends Model
         foreach ($values as $key => $value) {
             self::updateOrCreate(['key' => $key], ['value' => $value]);
         }
+    }
+
+    private static function valuesWithDefaults(array $defaults): array
+    {
+        $settings = self::whereIn('key', array_keys($defaults))
+            ->pluck('value', 'key')
+            ->filter(fn ($value) => $value !== null && $value !== '')
+            ->all();
+
+        return array_replace($defaults, $settings);
     }
 }

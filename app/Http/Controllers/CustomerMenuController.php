@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\RestaurantTable;
+use App\Models\SiteSetting;
 
 class CustomerMenuController extends Controller
 {
@@ -21,7 +22,8 @@ class CustomerMenuController extends Controller
             ->orderBy('name')
             ->get();
         $categories = Category::orderBy('name')->get();
+        $salesSettings = SiteSetting::salesSettings();
 
-        return view('customer.menu', compact('menus', 'categories', 'table'));
+        return view('customer.menu', compact('menus', 'categories', 'table', 'salesSettings'));
     }
 }

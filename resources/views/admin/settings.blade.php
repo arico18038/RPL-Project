@@ -9,46 +9,65 @@
 <main class="main-content">
     @include('partials.topbar', ['title' => 'Pengaturan Toko', 'subtitle' => 'Konfigurasi profil toko', 'role' => 'Kasir'])
 
+    @if (session('success'))
+        <div class="toast-message is-visible">{{ session('success') }}</div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert error">{{ $errors->first() }}</div>
+    @endif
+
     <section class="admin-panel settings-panel">
         <div class="settings-tabs">
             <a class="active" href="{{ route('admin.settings') }}">Profil Toko</a>
             <a href="{{ route('admin.settings.about') }}">Tentang Kami</a>
-            <button type="button">Struk & Pajak</button>
-            <button type="button">Pengguna</button>
-            <button type="button">Data</button>
+            <a href="{{ route('admin.settings.receipt') }}">Diskon & Pajak</a>
+            <a href="{{ route('admin.settings.data') }}">Data</a>
         </div>
 
-        <div class="settings-card" id="profil-toko">
+        <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="settings-card" id="profil-toko">
+            @csrf
+            @method('PUT')
+
             <h2>Informasi Toko</h2>
 
-            <label>Nama toko <b>*</b></label>
-            <input type="text" placeholder="Contoh: Sumber Rezeki 5" value="Rumah Makan 4SR">
+            <label for="store_name">Nama toko <b>*</b></label>
+            <input id="store_name" name="store_name" type="text" placeholder="Contoh: Rumah Makan 4SR" value="{{ old('store_name', $profile['store_name']) }}" required>
 
-            <label>Alamat lengkap <b>*</b></label>
-            <textarea placeholder="Contoh: Jl. Merdeka Kendala, KM.14.C"></textarea>
+            <label for="store_address">Alamat lengkap</label>
+            <textarea id="store_address" name="store_address" placeholder="Contoh: Jl. Merdeka Kendala, KM.14.C">{{ old('store_address', $profile['store_address']) }}</textarea>
 
             <div class="form-grid">
                 <div>
-                    <label>Nomor telepon <b>*</b></label>
-                    <input type="text" placeholder="+62">
+                    <label for="store_phone">Nomor telepon</label>
+                    <input id="store_phone" name="store_phone" type="text" placeholder="+62" value="{{ old('store_phone', $profile['store_phone']) }}">
                 </div>
                 <div>
-                    <label>Nomor WhatsApp <b>*</b></label>
-                    <input type="text" placeholder="+62">
+                    <label for="store_whatsapp">Nomor WhatsApp</label>
+                    <input id="store_whatsapp" name="store_whatsapp" type="text" placeholder="+62" value="{{ old('store_whatsapp', $profile['store_whatsapp']) }}">
                 </div>
             </div>
 
-            <label>NPWP (opsional)</label>
-            <input type="text" placeholder="Contoh: 01.000.000.000">
+            <label for="store_npwp">NPWP (opsional)</label>
+            <input id="store_npwp" name="store_npwp" type="text" placeholder="Contoh: 01.000.000.000" value="{{ old('store_npwp', $profile['store_npwp']) }}">
 
-            <label>Logo toko (opsional)</label>
+            <label for="store_logo_file">Logo toko (opsional)</label>
             <div class="upload-row">
-                <div class="upload-box">Klik untuk upload</div>
+                <label class="upload-box" for="store_logo_file">
+                    @if (!empty($profile['store_logo']))
+                        <img src="{{ asset($profile['store_logo']) }}" alt="Logo toko">
+                    @else
+                        Klik untuk upload
+                    @endif
+                </label>
+                <input id="store_logo_file" name="store_logo_file" type="file" accept="image/*">
                 <p>Format: JPG, PNG, atau SVG<br>Ukuran maksimal: 2MB</p>
             </div>
-        </div>
 
-        <button class="disabled-button" type="button">Simpan Perubahan</button>
+            <div class="settings-actions">
+                <button class="primary-button" type="submit">Simpan Perubahan</button>
+            </div>
+        </form>
     </section>
 </main>
 @endsection

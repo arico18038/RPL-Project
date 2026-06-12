@@ -7,6 +7,7 @@ const formatRupiah = (value) => new Intl.NumberFormat('id-ID', {
 const cart = new Map();
 let bookPageIndex = 0;
 let isBookAnimating = false;
+let activeReceipt = null;
 
 function updateClock() {
     const clock = document.getElementById('jam-sekarang');
@@ -25,18 +26,21 @@ function updateTotals() {
     const subtotal = getCartItems().reduce((total, item) => total + item.price * item.quantity, 0);
     const discountType = document.getElementById('tipe-diskon')?.value ?? 'persen';
     const discountValue = Number(document.getElementById('nilai-diskon')?.value ?? 0);
+    const taxRate = Number(document.getElementById('tax-rate')?.value ?? 11);
     const discountAmount = discountType === 'persen'
         ? Math.round(subtotal * Math.min(discountValue, 100) / 100)
         : Math.min(discountValue, subtotal);
     const taxable = Math.max(subtotal - discountAmount, 0);
-    const tax = Math.round(taxable * 0.11);
+    const tax = Math.round(taxable * taxRate / 100);
     const total = taxable + tax;
 
     const subtotalText = document.getElementById('subtotal-harga');
+    const discountText = document.getElementById('diskon-harga');
     const taxText = document.getElementById('ppn-harga');
     const totalText = document.getElementById('total-harga');
 
     if (subtotalText) subtotalText.textContent = formatRupiah(subtotal);
+    if (discountText) discountText.textContent = `- ${formatRupiah(discountAmount)}`;
     if (taxText) taxText.textContent = formatRupiah(tax);
     if (totalText) totalText.textContent = formatRupiah(total);
 }
@@ -158,6 +162,132 @@ function filterProducts() {
     updateBookPages();
 }
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
+function getReceiptData(id) {
+    const holder = document.getElementById(`receipt-data-${id}`);
+    if (!holder) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(holder.textContent);
+    } catch (error) {
+        return null;
+    }
+}
+
+function receiptHtml(receipt) {
+    const items = (receipt.items ?? []).map((item) => `
+        <tr>
+            <td>
+                <strong>${escapeHtml(item.name)}</strong>
+                <span>${Number(item.quantity)} x ${formatRupiah(Number(item.price ?? 0))}</span>
+            </td>
+            <td>${formatRupiah(Number(item.subtotal ?? 0))}</td>
+        </tr>
+    `).join('');
+    const discountRow = Number(receipt.discountAmount ?? 0) > 0
+        ? `<div><span>Diskon</span><strong>- ${formatRupiah(Number(receipt.discountAmount))}</strong></div>`
+        : '';
+
+    return `
+        <article class="receipt-paper">
+            <header>
+                <h3>${escapeHtml(receipt.store?.name ?? 'Rumah Makan 4SR')}</h3>
+                <p>${escapeHtml(receipt.store?.address ?? '')}</p>
+                <p>${escapeHtml(receipt.store?.phone || receipt.store?.whatsapp || '')}</p>
+            </header>
+
+            <section class="receipt-meta">
+                <div><span>No</span><strong>${escapeHtml(receipt.transactionCode)}</strong></div>
+                <div><span>Tanggal</span><strong>${escapeHtml(receipt.date)}</strong></div>
+                <div><span>Meja</span><strong>${escapeHtml(receipt.table)}</strong></div>
+                <div><span>Kasir</span><strong>${escapeHtml(receipt.cashier)}</strong></div>
+            </section>
+
+            <table>
+                <tbody>${items || '<tr><td colspan="2">Tidak ada item.</td></tr>'}</tbody>
+            </table>
+
+            <section class="receipt-total">
+                <div><span>Subtotal</span><strong>${formatRupiah(Number(receipt.subtotal ?? 0))}</strong></div>
+                ${discountRow}
+                <div><span>Pajak</span><strong>${formatRupiah(Number(receipt.tax ?? 0))}</strong></div>
+                <div class="grand-total"><span>Total</span><strong>${formatRupiah(Number(receipt.total ?? 0))}</strong></div>
+                <div><span>Metode</span><strong>${escapeHtml(receipt.paymentMethod ?? 'Tunai')}</strong></div>
+                <div><span>Status</span><strong>${escapeHtml(receipt.status ?? '-')}</strong></div>
+            </section>
+
+            <footer>Terima kasih sudah berkunjung.</footer>
+        </article>
+    `;
+}
+
+function showReceipt(id) {
+    const receipt = getReceiptData(id);
+    const modal = document.getElementById('receipt-modal');
+    const preview = document.getElementById('receipt-preview');
+
+    if (!receipt || !modal || !preview) {
+        return;
+    }
+
+    activeReceipt = receipt;
+    preview.innerHTML = receiptHtml(receipt);
+    modal.hidden = false;
+}
+
+function printReceipt(receipt) {
+    if (!receipt) {
+        return;
+    }
+
+    const printWindow = window.open('', '_blank', 'width=420,height=720');
+    if (!printWindow) {
+        alert('Popup cetak diblokir. Izinkan popup browser untuk mencetak struk.');
+        return;
+    }
+
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="id">
+        <head>
+            <meta charset="UTF-8">
+            <title>${escapeHtml(receipt.transactionCode)}</title>
+            <style>
+                * { box-sizing: border-box; }
+                body { color: #111827; font-family: Arial, sans-serif; margin: 0; padding: 18px; }
+                .receipt-paper { margin: 0 auto; max-width: 320px; }
+                header { border-bottom: 1px dashed #9ca3af; padding-bottom: 12px; text-align: center; }
+                h3 { font-size: 18px; margin: 0 0 6px; }
+                p { color: #4b5563; font-size: 12px; margin: 2px 0; }
+                .receipt-meta, .receipt-total { border-bottom: 1px dashed #9ca3af; padding: 12px 0; }
+                .receipt-meta div, .receipt-total div { display: flex; font-size: 12px; justify-content: space-between; margin: 6px 0; gap: 16px; }
+                .receipt-meta strong, .receipt-total strong { text-align: right; }
+                table { border-bottom: 1px dashed #9ca3af; border-collapse: collapse; margin-top: 10px; width: 100%; }
+                td { font-size: 12px; padding: 8px 0; vertical-align: top; }
+                td:last-child { text-align: right; white-space: nowrap; }
+                td span { color: #6b7280; display: block; margin-top: 3px; }
+                .grand-total { font-size: 15px !important; font-weight: 800; }
+                footer { font-size: 12px; padding-top: 14px; text-align: center; }
+            </style>
+        </head>
+        <body>${receiptHtml(receipt)}</body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+}
+
 function getAvailableBookPages() {
     return Array.from(document.querySelectorAll('.book-page'))
         .filter((page) => page.dataset.available !== 'false');
@@ -245,11 +375,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const recapType = document.getElementById('recap-type');
+    const dailyInput = document.querySelector('[data-period-input="daily"]');
     const monthlyInput = document.querySelector('[data-period-input="monthly"]');
     const yearlyInput = document.querySelector('[data-period-input="yearly"]');
     const syncPeriodInputs = () => {
+        const isDaily = recapType?.value === 'daily';
         const isYearly = recapType?.value === 'yearly';
-        if (monthlyInput) monthlyInput.hidden = isYearly;
+        if (dailyInput) dailyInput.hidden = !isDaily;
+        if (monthlyInput) monthlyInput.hidden = isYearly || isDaily;
         if (yearlyInput) yearlyInput.hidden = !isYearly;
     };
 
@@ -286,9 +419,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.category-btn').forEach((button) => {
         button.addEventListener('click', () => {
+            if (button.dataset.reportTab) {
+                return;
+            }
+
             document.querySelectorAll('.category-btn').forEach((item) => item.classList.remove('active'));
             button.classList.add('active');
             filterProducts();
+        });
+    });
+
+    document.querySelectorAll('[data-report-tab]').forEach((button) => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('[data-report-tab]').forEach((item) => item.classList.remove('active'));
+            document.querySelectorAll('[data-report-panel]').forEach((panel) => panel.classList.remove('active'));
+            button.classList.add('active');
+            document.querySelector(`[data-report-panel="${button.dataset.reportTab}"]`)?.classList.add('active');
+        });
+    });
+
+    document.querySelectorAll('[data-copy-link]').forEach((button) => {
+        button.addEventListener('click', async () => {
+            const link = button.dataset.copyLink;
+            try {
+                await navigator.clipboard.writeText(link);
+                button.textContent = 'Tersalin';
+                setTimeout(() => {
+                    button.textContent = 'Salin Link';
+                }, 1200);
+            } catch (error) {
+                window.prompt('Salin link pelanggan:', link);
+            }
         });
     });
 
@@ -320,6 +481,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelDeleteTableModal = document.getElementById('cancel-delete-table-modal');
     const deleteTableForm = document.getElementById('delete-table-form');
     const deleteTableSelect = document.getElementById('delete-table-select');
+    const categoryModal = document.getElementById('category-modal');
+    const openCategoryModal = document.getElementById('open-category-modal');
+    const closeCategoryModal = document.getElementById('close-category-modal');
+    const cancelCategoryModal = document.getElementById('cancel-category-modal');
+    const receiptModal = document.getElementById('receipt-modal');
+    const closeReceiptModal = document.getElementById('close-receipt-modal');
+    const cancelReceiptModal = document.getElementById('cancel-receipt-modal');
+    const printReceiptModal = document.getElementById('print-receipt-modal');
 
     const setMenuModalMode = (mode, data = {}) => {
         if (!menuModal || !menuForm || !menuFormMethod) {
@@ -340,8 +509,10 @@ document.addEventListener('DOMContentLoaded', () => {
         menuForm.elements.category_id.value = data.categoryId ?? '';
         menuForm.elements.price.value = data.price ?? '';
         menuForm.elements.stock.value = data.stock ?? '100';
+        if (menuForm.elements.unit) menuForm.elements.unit.value = data.unit ?? 'Pcs';
         menuForm.elements.description.value = data.description ?? '';
         menuForm.elements.image_url.value = data.imageUrl ?? '';
+        if (menuForm.elements.image_file) menuForm.elements.image_file.value = '';
         menuForm.elements.is_available.value = data.isAvailable ?? '1';
 
         if (deleteMenuForm && deleteMenuButton) {
@@ -365,6 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 categoryId: button.dataset.categoryId,
                 price: button.dataset.price,
                 stock: button.dataset.stock,
+                unit: button.dataset.unit,
                 description: button.dataset.description,
                 imageUrl: button.dataset.imageUrl,
                 isAvailable: button.dataset.isAvailable,
@@ -441,10 +613,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    openCategoryModal?.addEventListener('click', () => {
+        if (categoryModal) {
+            categoryModal.hidden = false;
+            document.getElementById('category-name')?.focus();
+        }
+    });
+
+    closeCategoryModal?.addEventListener('click', () => {
+        if (categoryModal) categoryModal.hidden = true;
+    });
+
+    cancelCategoryModal?.addEventListener('click', () => {
+        if (categoryModal) categoryModal.hidden = true;
+    });
+
+    categoryModal?.addEventListener('click', (event) => {
+        if (event.target === categoryModal) {
+            categoryModal.hidden = true;
+        }
+    });
+
     deleteMenuForm?.addEventListener('submit', (event) => {
         if (!confirm('Hapus barang ini dari daftar menu?')) {
             event.preventDefault();
         }
+    });
+
+    document.querySelectorAll('.receipt-view-button').forEach((button) => {
+        button.addEventListener('click', () => showReceipt(button.dataset.receiptId));
+    });
+
+    document.querySelectorAll('.receipt-print-button').forEach((button) => {
+        button.addEventListener('click', () => {
+            printReceipt(getReceiptData(button.dataset.receiptId));
+        });
+    });
+
+    closeReceiptModal?.addEventListener('click', () => {
+        if (receiptModal) receiptModal.hidden = true;
+    });
+
+    cancelReceiptModal?.addEventListener('click', () => {
+        if (receiptModal) receiptModal.hidden = true;
+    });
+
+    receiptModal?.addEventListener('click', (event) => {
+        if (event.target === receiptModal) {
+            receiptModal.hidden = true;
+        }
+    });
+
+    printReceiptModal?.addEventListener('click', () => {
+        printReceipt(activeReceipt);
     });
 
     updateBookPages();
