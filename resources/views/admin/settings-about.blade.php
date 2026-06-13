@@ -19,10 +19,22 @@
 
     <section class="admin-panel settings-panel">
         <div class="settings-tabs">
-            <a href="{{ route('admin.settings') }}">Profil Toko</a>
-            <a class="active" href="{{ route('admin.settings.about') }}">Tentang Kami</a>
-            <a href="{{ route('admin.settings.receipt') }}">Diskon & Pajak</a>
-            <a href="{{ route('admin.settings.data') }}">Data</a>
+            <a href="{{ route('admin.settings') }}">
+                <img src="{{ asset('images/icon/Icon Setting.png') }}" alt="" class="button-icon">
+                Profil Toko
+            </a>
+            <a class="active" href="{{ route('admin.settings.about') }}">
+                <img src="{{ asset('images/icon/icon-about.png') }}" alt="" class="button-icon">
+                Tentang Kami
+            </a>
+            <a href="{{ route('admin.settings.receipt') }}">
+                <img src="{{ asset('images/icon/icon-discount-tax.png') }}" alt="" class="button-icon">
+                Diskon & Pajak
+            </a>
+            <a href="{{ route('admin.settings.data') }}">
+                <img src="{{ asset('images/icon/Laporan.png') }}" alt="" class="button-icon">
+                Data
+            </a>
         </div>
 
         <form method="POST" action="{{ route('admin.settings.about.update') }}" class="settings-card about-settings-card">
@@ -34,7 +46,10 @@
                     <h2>Konten Tentang Kami</h2>
                     <p>Bagian ini akan tampil pada halaman pelanggan.</p>
                 </div>
-                <a class="outline-link" href="{{ route('about') }}" target="_blank">Lihat Halaman</a>
+                <a class="outline-link" href="{{ route('about') }}" target="_blank">
+                    <img src="{{ asset('images/icon/Mata.png') }}" alt="" class="button-icon">
+                    Lihat Halaman
+                </a>
             </div>
 
             <label for="about_kicker">Label kecil <b>*</b></label>
@@ -67,7 +82,10 @@
             </div>
 
             <div class="settings-actions">
-                <button class="primary-button" type="submit">Simpan Tentang Kami</button>
+                <button class="primary-button" type="submit">
+                    <img src="{{ asset('images/icon/icon-save.png') }}" alt="" class="button-icon invert-icon">
+                    Simpan Tentang Kami
+                </button>
             </div>
         </form>
     </section>

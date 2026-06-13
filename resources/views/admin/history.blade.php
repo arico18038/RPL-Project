@@ -19,14 +19,14 @@
                 </div>
             </div>
             <div class="metric-card blue">
-                <span><img src="{{ asset('images/icon/Uang.png') }}" alt="" class="metric-icon"></span>
+                <span><img src="{{ asset('images/icon/icon-revenue.png') }}" alt="" class="metric-icon"></span>
                 <div>
                     <p>Total penjualan {{ $periodLabel }}</p>
                     <strong>Rp {{ number_format($totalSales, 0, ',', '.') }}</strong>
                 </div>
             </div>
             <div class="metric-card green">
-                <span><img src="{{ asset('images/icon/Laba.png') }}" alt="" class="metric-icon"></span>
+                <span><img src="{{ asset('images/icon/icon-profit.png') }}" alt="" class="metric-icon"></span>
                 <div>
                     <p>Laba kotor {{ $periodLabel }}</p>
                     <strong>Rp {{ number_format($grossProfit, 0, ',', '.') }}</strong>
@@ -65,8 +65,14 @@
                     value="{{ $selectedYear }}"
                     aria-label="Pilih tahun rekap"
                 >
-                <button class="primary-button" type="submit">Terapkan</button>
-                <a class="outline-link" href="{{ route('admin.history') }}">Reset</a>
+                <button class="primary-button" type="submit">
+                    <img src="{{ asset('images/icon/Kalender.png') }}" alt="" class="button-icon invert-icon">
+                    Terapkan
+                </button>
+                <a class="outline-link" href="{{ route('admin.history') }}">
+                    <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
+                    Reset
+                </a>
             </form>
             <div class="search-box table-search">
                 <img src="{{ asset('images/icon/Icon Pencarian.png') }}" alt="" class="search-icon-img">
@@ -185,7 +191,10 @@
             <div class="receipt-preview" id="receipt-preview"></div>
 
             <div class="modal-actions">
-                <button class="outline-button" type="button" id="cancel-receipt-modal">Tutup</button>
+                <button class="outline-button" type="button" id="cancel-receipt-modal">
+                    <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
+                    Tutup
+                </button>
                 <button class="primary-button" type="button" id="print-receipt-modal">
                     <img src="{{ asset('images/icon/Aksi.png') }}" alt="" class="button-icon invert-icon">
                     Cetak Struk

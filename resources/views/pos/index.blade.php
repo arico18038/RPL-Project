@@ -171,13 +171,16 @@
             <div class="payment-method">
                 <p>Metode Pembayaran Hanya Bisa:</p>
                 <button type="button">
-                    <img src="{{ asset('images/icon/Uang.png') }}" alt="" class="button-icon">
+                    <img src="{{ asset('images/icon/icon-cash.png') }}" alt="" class="button-icon">
                     Tunai
                 </button>
             </div>
 
             <div class="summary-actions">
-                <button class="pay-button" id="btn-bayar" type="submit" disabled>Bayar (F9)</button>
+                <button class="pay-button" id="btn-bayar" type="submit" disabled>
+                    <img src="{{ asset('images/icon/icon-cash.png') }}" alt="" class="button-icon invert-icon">
+                    Bayar (F9)
+                </button>
                 <button class="clear-button" type="button" id="btn-clear-cart">
                     <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
                     Hapus keranjang

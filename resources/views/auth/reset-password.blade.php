@@ -25,7 +25,10 @@
                 <label for="password_confirmation">Konfirmasi Password Baru</label>
                 <input id="password_confirmation" name="password_confirmation" type="password" placeholder="ulangi password baru" required>
 
-                <button type="submit">Reset Password</button>
+                <button type="submit">
+                    <img src="{{ asset('images/icon/Icon Setting.png') }}" alt="" class="button-icon invert-icon">
+                    Reset Password
+                </button>
             </form>
 
             <p class="signup-text">Remember your password? <a href="{{ route('login') }}">Sign in</a></p>

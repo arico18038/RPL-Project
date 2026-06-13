@@ -21,17 +21,17 @@
             </div>
         </div>
 
-        <div class="order-summary-grid">
-            <div class="order-summary-card">
-                <span>Total Pesanan</span>
+            <div class="order-summary-grid">
+                <div class="order-summary-card">
+                <span><img src="{{ asset('images/icon/pesanan.png') }}" alt="" class="inline-icon"> Total Pesanan</span>
                 <strong>{{ $totalToday }}</strong>
             </div>
             <div class="order-summary-card">
-                <span>Menunggu</span>
+                <span><img src="{{ asset('images/icon/Kalender.png') }}" alt="" class="inline-icon"> Menunggu</span>
                 <strong>{{ $pendingToday }}</strong>
             </div>
             <div class="order-summary-card">
-                <span>Diproses</span>
+                <span><img src="{{ asset('images/icon/Aksi.png') }}" alt="" class="inline-icon"> Diproses</span>
                 <strong>{{ $processingToday }}</strong>
             </div>
         </div>
@@ -83,12 +83,15 @@
                                         @csrf
                                         @method('PATCH')
                                         <button class="btn-konfirmasi" type="submit">
-                                            <img src="{{ asset('images/icon/Icon Slest.png') }}" alt="" class="button-icon invert-icon">
+                                            <img src="{{ asset('images/icon/icon-save.png') }}" alt="" class="button-icon invert-icon">
                                             Selesai
                                         </button>
                                     </form>
                                 @else
-                                    <span class="muted-text">Selesai</span>
+                                    <span class="muted-text">
+                                        <img src="{{ asset('images/icon/icon-save.png') }}" alt="" class="inline-icon">
+                                        Selesai
+                                    </span>
                                 @endif
                             </td>
                         </tr>

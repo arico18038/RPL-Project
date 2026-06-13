@@ -14,9 +14,18 @@
     </div>
 
     <nav>
-        <a href="#menu">Menu</a>
-        <a href="#pesanan">Pesanan</a>
-        <a href="#tentang">Tentang</a>
+        <a href="#menu">
+            <img src="{{ asset('images/icon/Icon Barang dan Stok.png') }}" alt="" class="inline-icon invert-icon">
+            Menu
+        </a>
+        <a href="#pesanan">
+            <img src="{{ asset('images/icon/Icon Kranjang Belanja.png') }}" alt="" class="inline-icon invert-icon">
+            Pesanan
+        </a>
+        <a href="#tentang">
+            <img src="{{ asset('images/icon/icon-about.png') }}" alt="" class="inline-icon invert-icon">
+            Tentang
+        </a>
     </nav>
 </header>
 
@@ -26,7 +35,10 @@
             <p class="hero-kicker">Selamat datang di meja {{ $table?->number ?? '-' }}</p>
             <h1>Pilih menu favorit, pesanan langsung masuk ke kasir.</h1>
             <p>Silakan pilih makanan dan minuman dari daftar menu. Setelah dikirim, staf kami akan memproses pesanan Anda.</p>
-            <a href="#menu" class="hero-button">Lihat Menu</a>
+            <a href="#menu" class="hero-button">
+                <img src="{{ asset('images/icon/Mata.png') }}" alt="" class="button-icon invert-icon">
+                Lihat Menu
+            </a>
         </div>
     </section>
 
@@ -65,7 +77,9 @@
             </div>
 
             <div class="menu-book" aria-label="Buku menu digital">
-                <button class="book-nav prev" type="button" aria-label="Halaman sebelumnya">‹</button>
+                <button class="book-nav prev" type="button" aria-label="Halaman sebelumnya">
+                    <img src="{{ asset('images/icon/Icon hide sidebar.png') }}" alt="" class="button-icon invert-icon">
+                </button>
                 <div class="book-pages" id="book-pages">
                     @foreach ($categories as $category)
                         @php
@@ -113,7 +127,9 @@
                         @endif
                     @endforeach
                 </div>
-                <button class="book-nav next" type="button" aria-label="Halaman berikutnya">›</button>
+                <button class="book-nav next" type="button" aria-label="Halaman berikutnya">
+                    <img src="{{ asset('images/icon/Icon show sidebar.png') }}" alt="" class="button-icon invert-icon">
+                </button>
             </div>
 
             <div class="book-hint">Gunakan tombol panah untuk membalik lembar menu.</div>
@@ -128,6 +144,7 @@
             <div class="summary-section">
                 <h4>Item Dipilih</h4>
                 <div id="empty-cart-box" class="empty-cart-box">
+                    <img src="{{ asset('images/icon/Icon Kranjang Belanja.png') }}" alt="" class="empty-icon-img">
                     <p>Belum ada menu dipilih</p>
                 </div>
                 <ul id="daftar-pesanan" class="cart-list"></ul>
@@ -170,7 +187,10 @@
             </div>
 
             <div class="summary-actions">
-                <button class="pay-button" id="btn-bayar" type="submit" disabled>Kirim Pesanan</button>
+                <button class="pay-button" id="btn-bayar" type="submit" disabled>
+                    <img src="{{ asset('images/icon/pesanan.png') }}" alt="" class="button-icon invert-icon">
+                    Kirim Pesanan
+                </button>
                 <button class="clear-button" type="button" id="btn-clear-cart">
                     <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
                     Hapus pesanan

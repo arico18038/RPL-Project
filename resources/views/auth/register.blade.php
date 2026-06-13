@@ -28,7 +28,10 @@
                 <label for="password_confirmation">Konfirmasi Password</label>
                 <input id="password_confirmation" name="password_confirmation" type="password" placeholder="ulangi password" required>
 
-                <button type="submit">Sign up</button>
+                <button type="submit">
+                    <img src="{{ asset('images/icon/Tambah (1).png') }}" alt="" class="button-icon invert-icon">
+                    Sign up
+                </button>
             </form>
 
             <p class="signup-text">Already have an account? <a href="{{ route('login') }}">Sign in</a></p>

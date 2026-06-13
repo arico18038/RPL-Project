@@ -25,15 +25,15 @@
 
                 <div class="store-profile-grid">
                     <article>
-                        <span>Telepon</span>
+                        <span><img src="{{ asset('images/icon/Aksi.png') }}" alt="" class="inline-icon"> Telepon</span>
                         <strong>{{ $profile['store_phone'] ?: '-' }}</strong>
                     </article>
                     <article>
-                        <span>WhatsApp</span>
+                        <span><img src="{{ asset('images/icon/Mint.png') }}" alt="" class="inline-icon"> WhatsApp</span>
                         <strong>{{ $profile['store_whatsapp'] ?: '-' }}</strong>
                     </article>
                     <article>
-                        <span>NPWP</span>
+                        <span><img src="{{ asset('images/icon/Laporan.png') }}" alt="" class="inline-icon"> NPWP</span>
                         <strong>{{ $profile['store_npwp'] ?: '-' }}</strong>
                     </article>
                 </div>

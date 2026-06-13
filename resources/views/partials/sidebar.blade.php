@@ -33,7 +33,7 @@
             @if ($customerMode || auth()->guest())
                 <li>
                     <a href="{{ route('about') }}" @class(['active' => ($active ?? '') === 'tentang'])>
-                        <img src="{{ asset('images/icon/Icon Slest.png') }}" alt="" class="nav-icon">
+                        <img src="{{ asset('images/icon/icon-about.png') }}" alt="" class="nav-icon">
                         <span class="nav-label">Tentang Kami</span>
                     </a>
                 </li>

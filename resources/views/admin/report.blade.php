@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="metric-card blue">
-                <span><img src="{{ asset('images/icon/Uang.png') }}" alt="" class="metric-icon"></span>
+                <span><img src="{{ asset('images/icon/icon-revenue.png') }}" alt="" class="metric-icon"></span>
                 <div>
                     <p>Total pendapatan</p>
                     <strong>Rp {{ number_format($totalSales, 0, ',', '.') }}</strong>
@@ -52,7 +52,7 @@
                 </div>
             </div>
             <div class="metric-card green">
-                <span><img src="{{ asset('images/icon/Laba.png') }}" alt="" class="metric-icon"></span>
+                <span><img src="{{ asset('images/icon/icon-profit.png') }}" alt="" class="metric-icon"></span>
                 <div>
                     <p>Laba kotor</p>
                     <strong>Rp {{ number_format($grossProfit, 0, ',', '.') }}</strong>
@@ -61,9 +61,18 @@
         </div>
 
         <div class="category-tabs report-tabs">
-            <button type="button" class="category-btn active" data-report-tab="pendapatan">Pendapatan</button>
-            <button type="button" class="category-btn" data-report-tab="pengeluaran">Pengeluaran</button>
-            <button type="button" class="category-btn" data-report-tab="perbandingan">Perbandingan</button>
+            <button type="button" class="category-btn active" data-report-tab="pendapatan">
+                <img src="{{ asset('images/icon/icon-revenue.png') }}" alt="" class="button-icon">
+                Pendapatan
+            </button>
+            <button type="button" class="category-btn" data-report-tab="pengeluaran">
+                <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
+                Pengeluaran
+            </button>
+            <button type="button" class="category-btn" data-report-tab="perbandingan">
+                <img src="{{ asset('images/icon/Laporan.png') }}" alt="" class="button-icon">
+                Perbandingan
+            </button>
         </div>
 
         <div class="report-tab-panel active" data-report-panel="pendapatan">

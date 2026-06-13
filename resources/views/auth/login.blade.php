@@ -28,7 +28,10 @@
 
                 <a href="{{ route('password.reset') }}" class="forgot-link">Forgot Password?</a>
 
-                <button type="submit">Sign in</button>
+                <button type="submit">
+                    <img src="{{ asset('images/icon/Icon Keluar.png') }}" alt="" class="button-icon invert-icon">
+                    Sign in
+                </button>
             </form>
 
             <p class="signup-text">Don't you have an account? <a href="{{ route('register') }}">Sign up</a></p>

@@ -19,10 +19,22 @@
 
     <section class="admin-panel settings-panel">
         <div class="settings-tabs">
-            <a class="active" href="{{ route('admin.settings') }}">Profil Toko</a>
-            <a href="{{ route('admin.settings.about') }}">Tentang Kami</a>
-            <a href="{{ route('admin.settings.receipt') }}">Diskon & Pajak</a>
-            <a href="{{ route('admin.settings.data') }}">Data</a>
+            <a class="active" href="{{ route('admin.settings') }}">
+                <img src="{{ asset('images/icon/Icon Setting.png') }}" alt="" class="button-icon">
+                Profil Toko
+            </a>
+            <a href="{{ route('admin.settings.about') }}">
+                <img src="{{ asset('images/icon/icon-about.png') }}" alt="" class="button-icon">
+                Tentang Kami
+            </a>
+            <a href="{{ route('admin.settings.receipt') }}">
+                <img src="{{ asset('images/icon/icon-discount-tax.png') }}" alt="" class="button-icon">
+                Diskon & Pajak
+            </a>
+            <a href="{{ route('admin.settings.data') }}">
+                <img src="{{ asset('images/icon/Laporan.png') }}" alt="" class="button-icon">
+                Data
+            </a>
         </div>
 
         <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="settings-card" id="profil-toko">
@@ -65,7 +77,10 @@
             </div>
 
             <div class="settings-actions">
-                <button class="primary-button" type="submit">Simpan Perubahan</button>
+                <button class="primary-button" type="submit">
+                    <img src="{{ asset('images/icon/icon-save.png') }}" alt="" class="button-icon invert-icon">
+                    Simpan Perubahan
+                </button>
             </div>
         </form>
     </section>

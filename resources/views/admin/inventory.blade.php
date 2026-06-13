@@ -195,8 +195,14 @@
                         <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon invert-icon">
                         Hapus Barang
                     </button>
-                    <button class="outline-button" type="button" id="cancel-menu-modal">Batal</button>
-                    <button class="primary-button" type="submit">Simpan</button>
+                    <button class="outline-button" type="button" id="cancel-menu-modal">
+                        <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
+                        Batal
+                    </button>
+                    <button class="primary-button" type="submit">
+                        <img src="{{ asset('images/icon/icon-save.png') }}" alt="" class="button-icon invert-icon">
+                        Simpan
+                    </button>
                 </div>
             </form>
 
@@ -225,8 +231,14 @@
                 <textarea id="category-description" name="description" placeholder="Deskripsi singkat kategori"></textarea>
 
                 <div class="modal-actions">
-                    <button class="outline-button" type="button" id="cancel-category-modal">Batal</button>
-                    <button class="primary-button" type="submit">Simpan Kategori</button>
+                    <button class="outline-button" type="button" id="cancel-category-modal">
+                        <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
+                        Batal
+                    </button>
+                    <button class="primary-button" type="submit">
+                        <img src="{{ asset('images/icon/icon-save.png') }}" alt="" class="button-icon invert-icon">
+                        Simpan Kategori
+                    </button>
                 </div>
             </form>
         </div>
@@ -247,8 +259,14 @@
                 <input id="table-number" name="number" type="number" min="1" max="999" placeholder="Contoh: 12" value="{{ old('number') }}" required>
 
                 <div class="modal-actions">
-                    <button class="outline-button" type="button" id="cancel-table-modal">Batal</button>
-                    <button class="primary-button" type="submit">Simpan Meja</button>
+                    <button class="outline-button" type="button" id="cancel-table-modal">
+                        <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
+                        Batal
+                    </button>
+                    <button class="primary-button" type="submit">
+                        <img src="{{ asset('images/icon/icon-save.png') }}" alt="" class="button-icon invert-icon">
+                        Simpan Meja
+                    </button>
                 </div>
             </form>
         </div>
@@ -275,7 +293,10 @@
                 </select>
 
                 <div class="modal-actions">
-                    <button class="outline-button" type="button" id="cancel-delete-table-modal">Batal</button>
+                    <button class="outline-button" type="button" id="cancel-delete-table-modal">
+                        <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon">
+                        Batal
+                    </button>
                     <button class="danger-button" type="submit">
                         <img src="{{ asset('images/icon/Icon Hapus.png') }}" alt="" class="button-icon invert-icon">
                         Hapus Meja
