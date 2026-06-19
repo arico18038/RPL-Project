@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NeuroCase AI</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">NC</div>
+          <div>
+            <strong>NeuroCase AI</strong>
+            <span>EEG learning studio</span>
+          </div>
+        </div>
+        <nav class="module-nav" aria-label="Modul pembelajaran">
+          <button class="nav-item active" data-target="overview">Beranda</button>
+          <button class="nav-item" data-target="learning">Learning Center</button>
+          <button class="nav-item" data-target="lab">EEG Laboratory</button>
+          <button class="nav-item" data-target="explainer">AI EEG Explainer</button>
+          <button class="nav-item" data-target="challenge">Diagnosis Challenge</button>
+          <button class="nav-item" data-target="tutor">AI Tutor</button>
+          <button class="nav-item" data-target="assessment">Assessment Center</button>
+        </nav>
+        <div class="progress-card">
+          <span>Kompetensi</span>
+          <strong id="skillScore">0%</strong>
+          <div class="meter"><span id="skillMeter"></span></div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">LIDM 2026 - ITDP</p>
+            <h1>NeuroCase AI</h1>
+          </div>
+          <div class="top-actions">
+            <button class="icon-button" id="resetBtn" title="Reset progres">R</button>
+            <button class="primary-btn" data-target="lab">Mulai Praktik</button>
+          </div>
+        </header>
+
+        <section class="view active" id="overview">
+          <div class="hero-band">
+            <div class="hero-copy">
+              <p class="eyebrow">Simulasi neurologi berbasis EEG nyata</p>
+              <h2>Belajar membaca sinyal, memahami pasien, dan melatih clinical reasoning.</h2>
+              <p>
+                Platform ini menggabungkan Learning Center, laboratorium EEG virtual, Explainable AI,
+                challenge diagnosis, AI Tutor, dan Assessment Center untuk mahasiswa kesehatan,
+                biomedis, dan informatika.
+              </p>
+              <div class="hero-actions">
+                <button class="primary-btn" data-target="learning">Pelajari EEG</button>
+                <button class="secondary-btn" data-target="challenge">Coba Challenge</button>
+              </div>
+            </div>
+            <div class="signal-stage" aria-label="Visual EEG interaktif">
+              <canvas id="heroCanvas" width="760" height="440"></canvas>
+              <div class="signal-readout">
+                <span>CHB-MIT sample</span>
+                <strong id="heroStatus">normal baseline</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <article>
+              <span>Kasus latihan</span>
+              <strong>24</strong>
+              <p>Epilepsi, gangguan tidur, artefak, dan baseline sehat.</p>
+            </article>
+            <article>
+              <span>Kanal EEG</span>
+              <strong>18</strong>
+              <p>Simulasi kanal seperti FP1-F7, F7-T7, T7-P7, dan P7-O1.</p>
+            </article>
+            <article>
+              <span>Mode belajar</span>
+              <strong>6</strong>
+              <p>Materi, eksplorasi sinyal, penjelasan AI, kuis, tutor, dan evaluasi.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="learning">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Learning Center</p>
+              <h2>Konsep dasar EEG dan neurologi</h2>
+            </div>
+            <select id="lessonSelect" aria-label="Pilih materi">
+              <option value="intro">Pengenalan EEG</option>
+              <option value="waves">Gelombang otak</option>
+              <option value="electrodes">Elektroda dan kanal</option>
+              <option value="disorders">Gangguan neurologis</option>
+            </select>
+          </div>
+          <div class="learning-layout">
+            <article class="lesson-panel">
+              <h3 id="lessonTitle"></h3>
+              <p id="lessonText"></p>
+              <div class="wave-tabs" id="waveTabs"></div>
+            </article>
+            <div class="brain-panel">
+              <canvas id="brainCanvas" width="640" height="420"></canvas>
+              <div class="brain-caption">
+                <strong id="waveName">Alpha</strong>
+                <span id="waveInfo">8-13 Hz, sering muncul saat rileks.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="lab">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">EEG Laboratory</p>
+              <h2>Eksplorasi sinyal EEG virtual</h2>
+            </div>
+            <div class="control-row">
+              <label>Kanal
+                <select id="channelSelect"></select>
+              </label>
+              <label>Segmen
+                <input id="segmentRange" type="range" min="0" max="100" value="34">
+              </label>
+            </div>
+          </div>
+          <div class="lab-grid">
+            <div class="signal-panel">
+              <canvas id="labCanvas" width="980" height="430"></canvas>
+              <div class="timeline">
+                <span>00:00</span>
+                <span id="timeMarker">03:24</span>
+                <span>10:00</span>
+              </div>
+            </div>
+            <aside class="case-panel">
+              <h3>Kasus Aktif</h3>
+              <select id="caseSelect" aria-label="Pilih kasus"></select>
+              <dl>
+                <div><dt>Pasien</dt><dd id="casePatient"></dd></div>
+                <div><dt>Keluhan</dt><dd id="caseComplaint"></dd></div>
+                <div><dt>Kondisi</dt><dd id="caseCondition"></dd></div>
+              </dl>
+              <button class="primary-btn full" data-target="explainer">Analisis dengan AI</button>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="explainer">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">AI EEG Explainer</p>
+              <h2>Penjelasan keputusan model</h2>
+            </div>
+            <button class="secondary-btn" id="runExplainBtn">Analisis kasus berikutnya</button>
+          </div>
+          <div class="explain-layout">
+            <div class="signal-panel">
+              <canvas id="explainCanvas" width="980" height="380"></canvas>
+            </div>
+            <article class="explain-card">
+              <div class="confidence">
+                <span>Probabilitas pola kejang</span>
+                <strong id="confidenceValue">82%</strong>
+              </div>
+              <div class="meter large"><span id="confidenceMeter"></span></div>
+              <h3>Alasan utama</h3>
+              <ul id="reasonList"></ul>
+              <h3>Interpretasi edukatif</h3>
+              <p id="explainText"></p>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="challenge">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Diagnosis Challenge</p>
+              <h2>Latihan diagnosis berbasis kasus</h2>
+            </div>
+            <span class="score-pill">Skor: <strong id="challengeScore">0</strong></span>
+          </div>
+          <div class="challenge-layout">
+            <article class="question-panel">
+              <h3 id="challengeTitle"></h3>
+              <p id="challengePrompt"></p>
+              <div class="answer-list" id="answerList"></div>
+              <button class="primary-btn" id="submitAnswerBtn">Kirim Jawaban</button>
+            </article>
+            <aside class="feedback-panel">
+              <h3>Umpan balik</h3>
+              <p id="feedbackText">Pilih jawaban diagnosis untuk melihat evaluasi clinical reasoning.</p>
+              <p class="source-note" id="challengeSource">Sumber akan tampil setelah jawaban dikirim.</p>
+              <button class="secondary-btn" id="nextCaseBtn">Kasus berikutnya</button>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="tutor">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">AI Tutor</p>
+              <h2>Asisten belajar neurologi</h2>
+            </div>
+          </div>
+          <div class="tutor-layout">
+            <div class="chat-panel" id="chatPanel">
+              <div class="message ai">Halo, saya Tutor NeuroCase. Tanyakan konsep EEG, gelombang otak, kanal, artefak, CHB-MIT, seizure, XAI, atau cara memakai fitur.</div>
+            </div>
+            <form class="chat-form" id="chatForm">
+              <input id="chatInput" type="text" placeholder="Contoh: apa bedanya alpha dan theta?" autocomplete="off">
+              <button class="primary-btn" type="submit">Kirim</button>
+            </form>
+            <div class="quick-prompts">
+              <button data-question="Apa itu spike-wave pada EEG?">Spike-wave</button>
+              <button data-question="Bagaimana membaca kanal EEG?">Kanal EEG</button>
+              <button data-question="Mengapa Explainable AI penting?">XAI</button>
+              <button data-question="Apa itu CHB-MIT dataset?">CHB-MIT</button>
+              <button data-question="Apa bedanya artefak dan seizure?">Artefak</button>
+              <button data-question="Bagaimana cara memakai EEG Laboratory?">Cara pakai lab</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="assessment">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Assessment Center</p>
+              <h2>Pre-test, post-test, dan evaluasi kasus</h2>
+            </div>
+          </div>
+          <div class="assessment-grid">
+            <article class="assessment-card">
+              <span>Pre-test</span>
+              <strong id="preScore">0%</strong>
+              <p>Mengukur pemahaman awal sebelum eksplorasi laboratorium.</p>
+              <button class="secondary-btn quiz-btn" data-type="pre">Mulai</button>
+            </article>
+            <article class="assessment-card">
+              <span>Post-test</span>
+              <strong id="postScore">0%</strong>
+              <p>Membandingkan peningkatan setelah materi dan challenge.</p>
+              <button class="secondary-btn quiz-btn" data-type="post">Mulai</button>
+            </article>
+            <article class="assessment-card">
+              <span>Evaluasi kasus</span>
+              <strong id="caseScore">0%</strong>
+              <p>Menilai reasoning berdasarkan data klinis dan sinyal EEG.</p>
+              <button class="secondary-btn quiz-btn" data-type="case">Mulai</button>
+            </article>
+          </div>
+          <div class="quiz-panel" id="quizPanel">
+            <h3 id="quizTitle">Pilih assessment</h3>
+            <p id="quizQuestion">Assessment akan muncul di sini.</p>
+            <div id="quizOptions" class="answer-list"></div>
+            <p class="source-note" id="quizSource">Soal assessment menggunakan rujukan NCBI Bookshelf, American Epilepsy Society, dan PhysioNet.</p>
+          </div>
+          <div class="reference-panel">
+            <h3>Rujukan Konten Soal</h3>
+            <ul>
+              <li><a href="https://www.ncbi.nlm.nih.gov/books/NBK390346/" target="_blank" rel="noopener">Electroencephalography (EEG): An Introductory Text and Atlas - NCBI Bookshelf / American Epilepsy Society</a></li>
+              <li><a href="https://www.ncbi.nlm.nih.gov/books/NBK539805/" target="_blank" rel="noopener">Normal EEG Waveforms - StatPearls / NCBI Bookshelf</a></li>
+              <li><a href="https://physionet.org/content/chbmit/1.0.0/" target="_blank" rel="noopener">CHB-MIT Scalp EEG Database - PhysioNet</a></li>
+            </ul>
+          </div>
+        </section>
+
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
