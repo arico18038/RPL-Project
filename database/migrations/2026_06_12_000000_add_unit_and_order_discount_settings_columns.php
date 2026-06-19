@@ -10,29 +10,29 @@ return new class extends Migration
     {
         Schema::table('menu_items', function (Blueprint $table) {
             if (!Schema::hasColumn('menu_items', 'unit')) {
-                $table->string('unit', 30)->default('Pcs')->after('stock');
+                $table->string('unit', 30)->default('Pcs');
             }
         });
 
         Schema::table('orders', function (Blueprint $table) {
             if (!Schema::hasColumn('orders', 'subtotal')) {
-                $table->unsignedInteger('subtotal')->default(0)->after('status');
+                $table->unsignedInteger('subtotal')->default(0);
             }
 
             if (!Schema::hasColumn('orders', 'discount_type')) {
-                $table->string('discount_type', 20)->default('persen')->after('subtotal');
+                $table->string('discount_type', 20)->default('persen');
             }
 
             if (!Schema::hasColumn('orders', 'discount_value')) {
-                $table->unsignedInteger('discount_value')->default(0)->after('discount_type');
+                $table->unsignedInteger('discount_value')->default(0);
             }
 
             if (!Schema::hasColumn('orders', 'discount_amount')) {
-                $table->unsignedInteger('discount_amount')->default(0)->after('discount_value');
+                $table->unsignedInteger('discount_amount')->default(0);
             }
 
             if (!Schema::hasColumn('orders', 'tax')) {
-                $table->unsignedInteger('tax')->default(0)->after('discount_amount');
+                $table->unsignedInteger('tax')->default(0);
             }
         });
     }

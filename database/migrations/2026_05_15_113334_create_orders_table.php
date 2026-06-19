@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('table_number')->nullable();
-            $table->unsignedInteger('subtotal');
-            $table->enum('discount_type', ['persen', 'rupiah'])->default('persen');
+            $table->unsignedBigInteger('table_id')->nullable()->index();
+            $table->string('status', 20)->default('pending');
+            $table->unsignedInteger('subtotal')->default(0);
+            $table->string('discount_type', 20)->default('persen');
             $table->unsignedInteger('discount_value')->default(0);
             $table->unsignedInteger('discount_amount')->default(0);
             $table->unsignedInteger('tax')->default(0);
-            $table->unsignedInteger('total');
-            $table->string('payment_method')->default('tunai');
-            $table->enum('status', ['pending', 'paid'])->default('pending');
+            $table->unsignedInteger('total_price')->default(0);
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->string('description')->nullable();
             $table->timestamps();
         });
 
@@ -25,7 +26,6 @@ return new class extends Migration
         Schema::table('menu_items', function (Blueprint $table) {
             $table->foreignId('category_id')
                 ->nullable()
-                ->after('id')
                 ->constrained('categories')
                 ->nullOnDelete();
         });

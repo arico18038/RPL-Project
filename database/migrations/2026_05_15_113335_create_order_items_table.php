@@ -15,10 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
             $table->foreignId('menu_item_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('menu_name');
-            $table->unsignedInteger('price');
             $table->unsignedInteger('quantity');
-            $table->unsignedInteger('line_total');
+            $table->unsignedInteger('subtotal');
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\MenuItem;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -23,8 +24,17 @@ class MenuItemSeeder extends Seeder
             ['name' => 'Kerupuk', 'code' => 'LNY-001', 'category' => 'lainnya', 'price' => 3000, 'stock' => 40],
         ];
 
+        $categoryIds = Category::query()
+            ->pluck('id', 'slug');
+
         foreach ($menus as $menu) {
-            MenuItem::updateOrCreate(['code' => $menu['code']], $menu);
+            MenuItem::updateOrCreate(
+                ['code' => $menu['code']],
+                array_merge($menu, [
+                    'category_id' => $categoryIds->get($menu['category']),
+                    'is_available' => true,
+                ])
+            );
         }
     }
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedInteger('stock')->default(0);
             $table->string('image')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->text('description')->nullable();
             $table->timestamps();
             $table->text('image_url')->nullable();
         });
