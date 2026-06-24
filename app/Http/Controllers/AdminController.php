@@ -201,17 +201,22 @@ class AdminController extends Controller
     public function storeMenu(Request $request)
     {
         $validated = $this->validateMenu($request);
+        $category = Category::findOrFail($validated['category_id']);
         $imageUrl = $this->resolveMenuImage($request, $validated['image_url'] ?? null);
+        $isAvailable = (bool) $validated['is_available'];
 
         MenuItem::create([
             'name' => $validated['name'],
+            'code' => $this->generateMenuCode(),
+            'category' => $this->legacyCategoryValue($category),
             'category_id' => $validated['category_id'],
             'price' => $validated['price'],
             'stock' => $validated['stock'],
             'unit' => $validated['unit'],
             'description' => $validated['description'] ?? null,
             'image_url' => $imageUrl,
-            'is_available' => (bool) $validated['is_available'],
+            'is_active' => $isAvailable,
+            'is_available' => $isAvailable,
         ]);
 
         return redirect()
@@ -279,17 +284,21 @@ class AdminController extends Controller
     public function updateMenu(Request $request, MenuItem $menu)
     {
         $validated = $this->validateMenu($request);
+        $category = Category::findOrFail($validated['category_id']);
         $imageUrl = $this->resolveMenuImage($request, $validated['image_url'] ?? null, $menu->image_url);
+        $isAvailable = (bool) $validated['is_available'];
 
         $menu->update([
             'name' => $validated['name'],
+            'category' => $this->legacyCategoryValue($category),
             'category_id' => $validated['category_id'],
             'price' => $validated['price'],
             'stock' => $validated['stock'],
             'unit' => $validated['unit'],
             'description' => $validated['description'] ?? null,
             'image_url' => $imageUrl,
-            'is_available' => (bool) $validated['is_available'],
+            'is_active' => $isAvailable,
+            'is_available' => $isAvailable,
         ]);
 
         return redirect()
@@ -430,6 +439,33 @@ class AdminController extends Controller
         }
 
         return $this->normalizeImageUrl($imageUrl) ?: $currentImage;
+    }
+
+    private function generateMenuCode(): string
+    {
+        $nextId = (int) (MenuItem::max('id') ?? 0) + 1;
+
+        do {
+            $code = 'BRG-' . str_pad((string) $nextId, 3, '0', STR_PAD_LEFT);
+            $nextId++;
+        } while (MenuItem::where('code', $code)->exists());
+
+        return $code;
+    }
+
+    private function legacyCategoryValue(Category $category): string
+    {
+        $name = strtolower($category->slug ?? $category->name);
+
+        if (str_contains($name, 'makan')) {
+            return 'makanan';
+        }
+
+        if (str_contains($name, 'minum')) {
+            return 'minuman';
+        }
+
+        return 'lainnya';
     }
 
     private function storePublicUpload($file, string $folder): string

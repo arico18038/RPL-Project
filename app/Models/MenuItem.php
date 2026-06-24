@@ -8,11 +8,15 @@ class MenuItem extends Model
 {
     protected $fillable = [
         'name',
+        'code',
+        'category',
         'category_id',
         'price',
         'stock',
         'unit',
+        'image',
         'image_url',
+        'is_active',
         'is_available',
         'description',
     ];
@@ -20,6 +24,7 @@ class MenuItem extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'stock' => 'integer',
+        'is_active' => 'boolean',
         'is_available' => 'boolean',
     ];
 
